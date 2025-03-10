@@ -77,6 +77,14 @@
  * ## fonts 
  * ------------------------------------------------------------------- */
 @import url('https://fonts.googleapis.com/css2?family=Castoro:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+@font-face {
+	font-family: 'water-lilly';
+	src: url('css/Waterlily Script.ttf')
+}
+
+title {
+	font-family: 'CustomFont';
+}
 
 :root {
   --font-1: 'Inter', sans-serif;
