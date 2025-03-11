@@ -82,7 +82,7 @@
     src: url('css/Waterlily-Script.ttf');
 }
 
-.title, .hero__entry-title, .entry__title, .footer_title h4 {
+.site-title, .hero__entry-title, .entry__title, .footer_title h4 {
     font-family: 'Waterlilly';
 }
 
