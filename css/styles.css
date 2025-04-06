@@ -4259,6 +4259,21 @@ td:last-child {
 
 }
 
+#events {
+    width: 100%;
+
+}
+.events {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#events img {
+    width: 100vh;
+
+}
+
 
 /* ------------------------------------------------------------------- 
  * responsive:
