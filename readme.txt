@@ -1,129 +1,46 @@
-==================================================================================================
 
-DESCRIPTION:
+# Trailblazing Moms - README
 
-HUDSON is a simple and modern free personal website template designed for creatives and 
-professionals who want to showcase their skills and work in an eye-catching way. Its simple yet 
-sophisticated design is perfect for anyone who wants to create a polished and professional online 
-presence without spending a lot of time or money on web development.
+Welcome to **Trailblazing Moms**! We are a community-driven platform designed to empower, inspire, and support moms who are making waves in their careers, families, and communities. Our mission is to help moms embrace their unique journey, celebrate their achievements, and connect with other like-minded women who are passionate about blazing their own trails.
 
-==================================================================================================
+## Website Overview
 
+**Trailblazing Moms** is a user-friendly website built using the **Styleshout template**, a clean and modern design template that enhances user experience. The template provides an elegant, responsive layout optimized for both desktop and mobile devices, ensuring that moms on-the-go can access our content anytime, anywhere.
 
-LICENSE:
+### Key Features
+- **Responsive Design**: The website is fully responsive and adapts to various screen sizes, making it easy to browse on any device.
+- **Modern Layout**: Using the Styleshout template, we offer a sleek and stylish interface that allows you to find information quickly and easily.
+- **Community Forum**: Connect with other trailblazing moms through our active forum. Share stories, tips, and resources.
+- **Blog Section**: Explore insightful articles on parenting, career tips, personal growth, and more.
+- **Resource Hub**: Access a collection of tools, guides, and recommendations to help you succeed both as a mom and a professional.
 
-This free resource is provided by styleshout.com and is free to use in 
-both personal and commercial projects.
+### Getting Started
+1. **Explore the Site**: Browse through our articles, community posts, and resources.
+2. **Join the Community**: Sign up to become a member and participate in the discussion forums.
+3. **Stay Informed**: Subscribe to our newsletter to get the latest updates, event announcements, and featured articles.
+4. **Connect with Us**: Follow us on social media for daily inspiration and more.
 
+## Template Details
 
-Rights:
--------
+This website uses the **Styleshout template**, which provides:
+- A **clean design** with a focus on simplicity and ease of navigation.
+- **HTML5 and CSS3** structure for modern web standards.
+- A **responsive layout** that works across all devices, from desktops to smartphones.
+- **Well-documented code**, making it easy to customize and extend if needed.
 
-You are permitted to use this free resource in any number of personal and commercial projects for 
-yourself or a client. You may modify the resource according to your requirements and include them 
-in your projects under the following condition - you MUST give appropriate credit, provide an 
-attribution link to styleshout.com.
+### Customizations:
+While the base template is provided, the website includes customizations to reflect the **Trailblazing Moms** brand:
+- Custom colors, fonts, and branding elements.
+- Tailored content sections for moms to connect, share, and grow.
+- Special features designed for an inclusive and supportive community.
 
+## Contributing
+We welcome contributions! If you have ideas for articles, resources, or ways to improve the site, feel free to reach out to us. We believe in the power of collaboration and would love to have you involved in making **Trailblazing Moms** even better.
 
-Prohibitions:
--------------
+## License
+This website uses the **Styleshout template**, which is free to use under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). The modifications and content added to the website are owned by **Trailblazing Moms** and are subject to our terms of use.
 
-You are not permitted to resell or redistribute(even for free) the resource "as is" without 
-prior consent. If you would like to republish or promote this resource on your site, please 
-link back to the appropriate resource page on styleshout.com where users can find the download 
-and not directly to the download zip file.
+---
 
-
-Attribution: 
-------------
-
-You must include a credit link to our website(https://styleshout.com) somewhere on your site. 
-We prefer the footer credit that comes with the template but you are still free to move it 
-somewhere else.
-
-
-
-If you have any questions about the License, feel free to contact us.
-
-
------------------------------------------------------------------------------------------------------
-
-
-REMOVING THE ATTRIBUTION LINK:
-
-We understand that there are situations where you want to use our templates without 
-the crediting obligation. If that's your case, you can always send us a 
-credit removal fee of 10 USD through Paypal. This will allow you to use a single 
-template attribution/credit link free on ONE DOMAIN name.
-
-You can send your payments through Paypal to this address: ealigam@gmail.com or
-visit our attribution removal page: https://styleshout.com/attribution-free/ 
-and click the pay button on the page.
-
-If possible, kindly send us the site's url where the template is being used. 
-Also, keep your Paypal receipt as proof of payment and your good to go.
-
-
------------------------------------------------------------------------------------------------------- 
-
-
-SUPPORT:
-    
-Since HUDSON is distributed for free, support is not offered. HUDSON is coded according 
-to current web standards and we did our best to make the template easy to use and modify.
-If you have minimum web development experience, you can easily modify the template. 
-However, If you're still new to HTML and CSS, I suggest that you visit the 
-following tutorials:
-
- - https://marksheet.io/
- - http://learn.shayhowe.com/html-css/
-
-These will teach you the essentials of HTML and CSS. In addition, if you want to include
-javascript in your skill-set, you can also check out these tutorials: 
-
- - https://www.codecademy.com/learn/introduction-to-javascript
- - https://javascript.info/
-
-
-
-
--------------------------------------------------------------------------------------------------------
-
-
-GET THE LATEST VERSION:
-
-We update our templates on a regular basis so to make sure that you have the latest version, 
-always download the template files directly on our website(https://styleshout.com/)
-
-
-
--------------------------------------------------------------------------------------------------------
-
-
-SOURCES AND CREDITS:
-
-I've used the following resources as listed.
-
-Fonts:
- - Castoro Font (https://fonts.google.com/specimen/Castoro)
- - Public Sans Font (https://fonts.google.com/specimen/Public+Sans)
-
-Icons:
- - Boxicons (https://boxicons.com/)
- - Iconmonstr (https://iconmonstr.com/)
-
-Stock Photos and Graphics:
- - Unsplash.com (https://unsplash.com/)
- 
-Javascript Files:
- - MoveTo.js (https://github.com/hsnaydd/moveTo)
- - Prism.js (https://prismjs.com/)
- - Swiper JS (https://swiperjs.com/)
- - GLightbox (https://biati-digital.github.io/glightbox/)
-
--------------------------------------------------------------------------------------------------------
-
-
-Thanks for downloading from StyleShout :)
-
+Thank you for visiting **Trailblazing Moms**. We hope you feel inspired and empowered to continue blazing your own trail!
 
