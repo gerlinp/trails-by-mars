@@ -3961,6 +3961,43 @@ td:last-child {
  * responsive:
  * about
  * ------------------------------------------------------------------- */
+@media screen and (max-width: 628px) {
+    .about-profile-image {
+        float: none !important;
+        display: block;
+        margin: 0 auto 2rem auto;
+        width: 250px;
+        height: 250px;
+    }
+
+    /* Ensure u-pull-left does not float on small screens for about-profile-image */
+    .about-profile-image.u-pull-left,
+    img.about-profile-image.u-pull-left {
+        float: none !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block !important;
+    }
+    
+    .s-about .attention-getter {
+        text-align: center;
+    }
+    
+    .s-about ul.attention-getter {
+        text-align: left;
+        display: inline-block;
+        max-width: 100%;
+    }
+}
+
+@media screen and (min-width: 629px) {
+    .about-profile-image {
+        float: left;
+        margin-right: 2rem;
+        margin-bottom: 1rem;
+    }
+}
+
 @media screen and (max-width: 800px) {
     .s-about {
         padding-top: var(--vspace-5);
