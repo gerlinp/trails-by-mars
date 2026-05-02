@@ -4744,4 +4744,6 @@ td:last-child {
     }
 }
 
-
+#map {
+    height: 50vh;
+}
