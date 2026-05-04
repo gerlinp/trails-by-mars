@@ -5,6 +5,8 @@
       "id": "pond-meadow-paved",
       "title": "Pond Meadow Paved Trail",
       "locationLabel": "Pond Meadow Park",
+      "breadcrumbs": "United States / Massachusetts / Pond Meadow Park",
+      "difficultyLabel": "Easy",
       "locations": {
         "directions": "Pond Meadow Park, 470 Liberty St, Braintree, MA 02184, USA",
         "postalAddress": "470 Liberty St, Braintree, MA 02184",
@@ -56,7 +58,6 @@
       },
       "description": "This is a beautiful paved trail around the pond—easy rolling terrain with views of the water and shaded woodland stretches.",
       "detail": "1.9 mi · Est. 40 min · Loop",
-      "moreDetailsHref": "index.html#guide",
       "style": {
         "color": "#5CE65C",
         "weight": 6,

@@ -192,14 +192,19 @@
     function populateCard(trail, card) {
         if (!trail || !card) return;
 
-        setTextAll(card, '.map-place-card__title', trail.title || '');
-        setTextAll(card, '.map-place-card__kicker', trail.locationLabel || '');
+        var modal = document.getElementById('map-place-mobile-modal');
+        var roots = modal ? [card, modal] : [card];
 
         var loc = trail.locations || {};
         var postal = loc.postalAddress || '';
-        setTextAll(card, '.map-place-card__postal', postal);
-        card.querySelectorAll('.map-place-card__postal').forEach(function (el) {
-            if (el) el.hidden = !postal;
+
+        roots.forEach(function (root) {
+            setTextAll(root, '.map-place-card__title', trail.title || '');
+            setTextAll(root, '.map-place-card__kicker', trail.locationLabel || '');
+            setTextAll(root, '.map-place-card__postal', postal);
+            root.querySelectorAll('.map-place-card__postal').forEach(function (el) {
+                if (el) el.hidden = !postal;
+            });
         });
 
         var detailEl = card.querySelector('.map-place-card__detail--mobile');
@@ -212,12 +217,20 @@
         }
 
         var gallery = trail.gallery && trail.gallery.length ? trail.gallery : trail.thumb ? [trail.thumb] : [];
-        var mainG = card.querySelector('.map-place-card__gallery-main');
-        var subs = card.querySelectorAll('.map-place-card__gallery-sub');
-        if (mainG && gallery[0]) {
-            mainG.src = gallery[0].src || '';
-            mainG.alt = gallery[0].alt != null ? gallery[0].alt : trail.title || '';
-        }
+        roots.forEach(function (root) {
+            root.querySelectorAll('.map-place-card__gallery-main').forEach(function (mainG) {
+                if (mainG && gallery[0]) {
+                    mainG.src = gallery[0].src || '';
+                    mainG.alt = gallery[0].alt != null ? gallery[0].alt : trail.title || '';
+                }
+            });
+        });
+        var subs = [];
+        roots.forEach(function (root) {
+            root.querySelectorAll('.map-place-card__gallery-sub').forEach(function (el) {
+                subs.push(el);
+            });
+        });
         for (var g = 0; g < subs.length; g++) {
             var idx = g + 1;
             var item = gallery[idx] || gallery[0];
@@ -228,20 +241,454 @@
         }
 
         var metrics = trail.metrics || {};
-        var dds = card.querySelectorAll('[data-map-metric]');
-        for (var d = 0; d < dds.length; d++) {
-            var dd = dds[d];
-            var mkey = dd.getAttribute('data-map-metric');
-            var mval = metrics[mkey];
-            dd.textContent = mval != null && mval !== '' ? mval : '—';
+        roots.forEach(function (root) {
+            var dds = root.querySelectorAll('[data-map-metric]');
+            for (var d = 0; d < dds.length; d++) {
+                var dd = dds[d];
+                var mkey = dd.getAttribute('data-map-metric');
+                var mval = metrics[mkey];
+                dd.textContent = mval != null && mval !== '' ? mval : '—';
+            }
+        });
+
+        roots.forEach(function (root) {
+            var descEl = root.querySelector('.map-place-card__description');
+            if (descEl) descEl.textContent = trail.description || '';
+        });
+
+        var heroModal = modal && modal.querySelector('.map-place-detail__hero-img');
+        if (heroModal && gallery[0]) {
+            heroModal.src = gallery[0].src || '';
+            heroModal.alt = gallery[0].alt != null ? gallery[0].alt : trail.title || '';
         }
 
-        var descEl = card.querySelector('.map-place-card__description');
-        if (descEl) descEl.textContent = trail.description || '';
+        populateMobileDetailFields(trail);
+        setupMobileDetailInteractions(trail);
+        initMapPlaceWeather(trail);
+    }
 
-        var more = card.querySelector('.map-place-card__more');
-        if (more && trail.moreDetailsHref) {
-            more.setAttribute('href', trail.moreDetailsHref);
+    function getForecastCoords(trail) {
+        if (!trail) return null;
+        var loc = trail.locations || {};
+        if (loc.addressMarker && loc.addressMarker.lat != null && loc.addressMarker.lng != null) {
+            return { lat: Number(loc.addressMarker.lat), lng: Number(loc.addressMarker.lng) };
+        }
+        if (trail.marker && trail.marker.lat != null && trail.marker.lng != null) {
+            return { lat: Number(trail.marker.lat), lng: Number(trail.marker.lng) };
+        }
+        return null;
+    }
+
+    /** WMO weather interpretation codes (Open-Meteo). */
+    function weatherCodeMeta(code) {
+        var c = code == null ? -1 : Number(code);
+        if (c === 0) {
+            return { label: 'Clear', variant: 'clear' };
+        }
+        if (c >= 1 && c <= 3) {
+            return { label: c === 1 ? 'Mostly clear' : c === 2 ? 'Partly cloudy' : 'Overcast', variant: 'partly' };
+        }
+        if (c >= 45 && c <= 48) {
+            return { label: 'Foggy', variant: 'fog' };
+        }
+        if (c >= 51 && c <= 57) {
+            return { label: 'Drizzle', variant: 'drizzle' };
+        }
+        if ((c >= 61 && c <= 67) || c === 80 || c === 81 || c === 82) {
+            return { label: c >= 80 && c <= 82 ? 'Rain showers' : 'Rain', variant: 'rain' };
+        }
+        if (c >= 71 && c <= 77) {
+            return { label: 'Snow', variant: 'snow' };
+        }
+        if (c >= 95 && c <= 99) {
+            return { label: 'Thunderstorm', variant: 'storm' };
+        }
+        return { label: 'Cloudy', variant: 'cloud' };
+    }
+
+    function weatherSvg(variant, size) {
+        var s = size || 24;
+        var vb = '0 0 24 24';
+        var inner;
+        switch (variant) {
+            case 'clear':
+                inner =
+                    '<circle cx="12" cy="12" r="5" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>' +
+                    '<g stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round">' +
+                    '<line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>' +
+                    '<line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>' +
+                    '<line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>' +
+                    '<line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></g>';
+                break;
+            case 'partly':
+                inner =
+                    '<circle cx="8" cy="9" r="3.5" fill="#fbbf24"/>' +
+                    '<path fill="#94a3b8" d="M14 18a4 4 0 0 1-3.9-3.2 3.5 3.5 0 1 1 3.4-4.3A4 4 0 0 1 14 18z"/>';
+                break;
+            case 'fog':
+                inner =
+                    '<path fill="#94a3b8" d="M6 14h12v1.5H6V14zm0-3h10v1.5H6V11zm2-3h8v1.5H8V8z"/>' +
+                    '<path fill="#cbd5e1" d="M5 17h14v1H5v-1z"/>';
+                break;
+            case 'drizzle':
+            case 'rain':
+            case 'storm':
+                inner =
+                    '<path fill="#94a3b8" d="M8 6a4 4 0 0 1 7.7-1A4 4 0 0 1 17 13H8a4 4 0 0 1 0-8 2 2 0 0 1 0-4z"/>' +
+                    '<path stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" fill="none" d="M9 15v2.5M12 14v2.5M15 15v2.5"/>';
+                if (variant === 'storm') {
+                    inner +=
+                        '<path fill="#f59e0b" d="M12 16l-1.2 2.5h2l-1 2.8 2.8-3.2h-1.8l.9-2.1z"/>';
+                }
+                break;
+            case 'snow':
+                inner =
+                    '<path fill="#94a3b8" d="M8 6a4 4 0 0 1 7.7-1A4 4 0 0 1 17 13H8a4 4 0 0 1 0-8 2 2 0 0 1 0-4z"/>' +
+                    '<circle cx="9" cy="16" r="1" fill="#e2e8f0"/><circle cx="12" cy="18" r="1" fill="#e2e8f0"/><circle cx="15" cy="16" r="1" fill="#e2e8f0"/>';
+                break;
+            default:
+                inner = '<path fill="#94a3b8" d="M8 7a4 4 0 0 1 7.7-1A4 4 0 0 1 17 14H7a4 4 0 0 1-.2-8 3 3 0 0 1 1.2-6z"/>';
+        }
+        return (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' +
+            s +
+            '" height="' +
+            s +
+            '" viewBox="' +
+            vb +
+            '" class="map-place-weather__svg" focusable="false" aria-hidden="true">' +
+            inner +
+            '</svg>'
+        );
+    }
+
+    function formatShortTime(iso) {
+        if (!iso || typeof iso !== 'string') return '—';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+
+    function initMapPlaceWeather(trail) {
+        var section = document.querySelector('[data-map-weather]');
+        if (!section) return;
+
+        var coords = getForecastCoords(trail);
+        var loadEl = section.querySelector('.map-place-weather__loading');
+        var inner = section.querySelector('.map-place-weather__inner');
+        var errEl = section.querySelector('.map-place-weather__error');
+        var tabsEl = section.querySelector('.map-place-weather__tabs');
+        var detail = section.querySelector('.map-place-weather__detail');
+
+        function resetUi() {
+            if (errEl) {
+                errEl.hidden = true;
+                errEl.textContent = '';
+            }
+        }
+
+        if (!coords) {
+            section.hidden = true;
+            if (loadEl) loadEl.hidden = true;
+            if (inner) inner.hidden = true;
+            return;
+        }
+
+        section.hidden = false;
+        if (loadEl) loadEl.hidden = false;
+        if (inner) inner.hidden = true;
+        resetUi();
+
+        var tz = trail.locations && trail.locations.weatherTimezone ? trail.locations.weatherTimezone : 'America/New_York';
+        var url =
+            'https://api.open-meteo.com/v1/forecast?latitude=' +
+            encodeURIComponent(coords.lat) +
+            '&longitude=' +
+            encodeURIComponent(coords.lng) +
+            '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset' +
+            '&temperature_unit=fahrenheit' +
+            '&timezone=' +
+            encodeURIComponent(tz) +
+            '&forecast_days=7';
+
+        fetch(url)
+            .then(function (res) {
+                return res.ok ? res.json() : Promise.reject(new Error('Weather unavailable'));
+            })
+            .then(function (data) {
+                var daily = data && data.daily;
+                if (!daily || !daily.time || !daily.time.length) {
+                    throw new Error('No forecast');
+                }
+
+                var days = [];
+                for (var i = 0; i < daily.time.length; i++) {
+                    days.push({
+                        dateStr: daily.time[i],
+                        code: daily.weather_code != null ? daily.weather_code[i] : 0,
+                        maxF: daily.temperature_2m_max != null ? daily.temperature_2m_max[i] : null,
+                        minF: daily.temperature_2m_min != null ? daily.temperature_2m_min[i] : null,
+                        pop: daily.precipitation_probability_max != null ? daily.precipitation_probability_max[i] : null,
+                        sunrise: daily.sunrise != null ? daily.sunrise[i] : '',
+                        sunset: daily.sunset != null ? daily.sunset[i] : ''
+                    });
+                }
+
+                var selected = 0;
+
+                function dayTabLabel(dateStr) {
+                    var d = new Date(dateStr + 'T12:00:00');
+                    if (isNaN(d.getTime())) return '';
+                    var today = new Date();
+                    if (
+                        d.getFullYear() === today.getFullYear() &&
+                        d.getMonth() === today.getMonth() &&
+                        d.getDate() === today.getDate()
+                    ) {
+                        return 'Today';
+                    }
+                    return d.toLocaleDateString('en-US', { weekday: 'short' });
+                }
+
+                function renderDetail() {
+                    var day = days[selected];
+                    if (!day || !detail) return;
+
+                    var meta = weatherCodeMeta(day.code);
+                    var condIcon = detail.querySelector('.map-place-weather__condition-icon');
+                    var condLabel = detail.querySelector('.map-place-weather__condition-label');
+                    var hi = detail.querySelector('.map-place-weather__high');
+                    var lo = detail.querySelector('.map-place-weather__low');
+                    var precip = detail.querySelector('.map-place-weather__precip');
+                    var sr = detail.querySelector('.map-place-weather__sunrise');
+                    var ss = detail.querySelector('.map-place-weather__sunset');
+
+                    if (condIcon) {
+                        condIcon.innerHTML = weatherSvg(meta.variant, 44);
+                    }
+                    if (condLabel) condLabel.textContent = meta.label;
+
+                    var h = day.maxF != null && !isNaN(Number(day.maxF)) ? Math.round(Number(day.maxF)) : '—';
+                    var l = day.minF != null && !isNaN(Number(day.minF)) ? Math.round(Number(day.minF)) : '—';
+                    if (hi) hi.textContent = typeof h === 'number' ? h + '°' : h;
+                    if (lo) lo.textContent = typeof l === 'number' ? l + '°' : l;
+
+                    if (precip) {
+                        var p = day.pop != null && !isNaN(Number(day.pop)) ? Math.round(Number(day.pop)) : null;
+                        precip.textContent = p != null ? p + '%' : '—';
+                    }
+                    if (sr) {
+                        sr.textContent = formatShortTime(day.sunrise);
+                        if (day.sunrise) sr.setAttribute('datetime', day.sunrise);
+                        else sr.removeAttribute('datetime');
+                    }
+                    if (ss) {
+                        ss.textContent = formatShortTime(day.sunset);
+                        if (day.sunset) ss.setAttribute('datetime', day.sunset);
+                        else ss.removeAttribute('datetime');
+                    }
+                }
+
+                function selectTab(index) {
+                    selected = index;
+                    if (!tabsEl) return;
+                    var buttons = tabsEl.querySelectorAll('.map-place-weather__tab');
+                    for (var b = 0; b < buttons.length; b++) {
+                        var isSel = b === selected;
+                        buttons[b].setAttribute('aria-selected', isSel ? 'true' : 'false');
+                        buttons[b].classList.toggle('is-selected', isSel);
+                        buttons[b].tabIndex = isSel ? 0 : -1;
+                    }
+                    var panel = document.getElementById('map-place-weather-panel');
+                    if (panel) {
+                        panel.setAttribute('aria-labelledby', 'map-weather-tab-' + selected);
+                    }
+                    renderDetail();
+                }
+
+                if (tabsEl) {
+                    tabsEl.innerHTML = '';
+                    days.forEach(function (day, idx) {
+                        var meta = weatherCodeMeta(day.code);
+                        var btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'map-place-weather__tab';
+                        btn.setAttribute('role', 'tab');
+                        btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+                        btn.id = 'map-weather-tab-' + idx;
+                        btn.tabIndex = idx === 0 ? 0 : -1;
+                        btn.innerHTML =
+                            '<span class="map-place-weather__tab-day">' +
+                            dayTabLabel(day.dateStr) +
+                            '</span><span class="map-place-weather__tab-icon">' +
+                            weatherSvg(meta.variant, 22) +
+                            '</span>';
+                        btn.addEventListener('click', function () {
+                            selectTab(idx);
+                        });
+                        tabsEl.appendChild(btn);
+                    });
+                }
+
+                selectTab(0);
+
+                if (loadEl) loadEl.hidden = true;
+                if (inner) inner.hidden = false;
+            })
+            .catch(function () {
+                if (loadEl) loadEl.hidden = true;
+                if (inner) inner.hidden = true;
+                if (errEl) {
+                    errEl.hidden = false;
+                    errEl.textContent = 'Weather could not be loaded. Try again later.';
+                }
+            });
+    }
+
+    /** Breadcrumbs, difficulty row, park link, photo dots (mobile modal). Mini map: Leaflet in main init. */
+    function populateMobileDetailFields(trail) {
+        var modal = document.getElementById('map-place-mobile-modal');
+        if (!modal || !trail) return;
+
+        var bc = modal.querySelector('.map-place-detail__breadcrumbs');
+        if (bc) {
+            var bt = trail.breadcrumbs || '';
+            bc.textContent = bt;
+            bc.hidden = !String(bt).trim();
+        }
+
+        var diffWrap = modal.querySelector('.map-place-detail__difficulty-wrap');
+        var diffLabel = modal.querySelector('.map-place-detail__difficulty-label');
+        if (diffWrap && diffLabel) {
+            if (trail.difficultyLabel) {
+                diffWrap.hidden = false;
+                diffLabel.textContent = trail.difficultyLabel;
+            } else {
+                diffWrap.hidden = true;
+            }
+        }
+
+        var parkLink = modal.querySelector('.map-place-detail__park-link--standalone');
+        if (parkLink) {
+            if (trail.locationLabel) {
+                parkLink.hidden = false;
+                parkLink.textContent = trail.locationLabel;
+                var q =
+                    trail.locations && trail.locations.directions
+                        ? trail.locations.directions
+                        : trail.locationLabel;
+                parkLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+                parkLink.target = '_blank';
+                parkLink.rel = 'noopener noreferrer';
+            } else {
+                parkLink.hidden = true;
+            }
+        }
+    }
+
+    function setupMobileDetailInteractions(trail) {
+        var modal = document.getElementById('map-place-mobile-modal');
+        if (!modal || !trail) return;
+
+        var gallery =
+            trail.gallery && trail.gallery.length ? trail.gallery : trail.thumb ? [trail.thumb] : [];
+        var heroImg = modal.querySelector('.map-place-detail__hero-img');
+        var dots = modal.querySelector('.map-place-detail__photo-dots');
+        var heroSection = modal.querySelector('.map-place-detail__hero');
+        var currentIdx = 0;
+
+        function showModalHeroPhoto(index) {
+            if (!heroImg || !gallery.length) return;
+            var n = gallery.length;
+            var i = ((index % n) + n) % n;
+            currentIdx = i;
+            var item = gallery[i];
+            heroImg.src = item.src || '';
+            heroImg.alt = item.alt != null ? item.alt : trail.title || '';
+            if (dots) {
+                var all = dots.querySelectorAll('.map-place-detail__dot');
+                for (var j = 0; j < all.length; j++) {
+                    all[j].classList.toggle('is-active', j === i);
+                }
+            }
+        }
+
+        if (dots) {
+            dots.hidden = gallery.length <= 1;
+            dots.innerHTML = '';
+            gallery.forEach(function (item, i) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'map-place-detail__dot' + (i === 0 ? ' is-active' : '');
+                b.setAttribute('aria-label', 'Photo ' + (i + 1) + ' of ' + gallery.length);
+                b.addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    showModalHeroPhoto(i);
+                });
+                dots.appendChild(b);
+            });
+        }
+
+        /* Full-page mobile modal only: swipe hero photo left/right (not tablet strip/gallery). */
+        if (
+            heroSection &&
+            gallery.length > 1 &&
+            !heroSection.dataset.modalHeroSwipeWired
+        ) {
+            heroSection.dataset.modalHeroSwipeWired = '1';
+            var startX = 0;
+            var startY = 0;
+            var tracking = false;
+            var SWIPE_PX = 40;
+
+            function shouldIgnoreSwipeTarget(t) {
+                if (!t || !t.closest) return true;
+                if (t.closest('button')) return true;
+                if (t.closest('a[href]')) return true;
+                if (t.closest('.map-place-detail__mini-map-wrap')) return true;
+                return false;
+            }
+
+            heroSection.addEventListener(
+                'touchstart',
+                function (ev) {
+                    if (ev.touches.length !== 1) return;
+                    if (shouldIgnoreSwipeTarget(ev.target)) return;
+                    var t = ev.touches[0];
+                    startX = t.clientX;
+                    startY = t.clientY;
+                    tracking = true;
+                },
+                { passive: true }
+            );
+
+            heroSection.addEventListener(
+                'touchend',
+                function (ev) {
+                    if (!tracking) return;
+                    tracking = false;
+                    if (!ev.changedTouches || !ev.changedTouches.length) return;
+                    var t = ev.changedTouches[0];
+                    var dx = t.clientX - startX;
+                    var dy = t.clientY - startY;
+                    if (Math.abs(dx) < SWIPE_PX) return;
+                    if (Math.abs(dx) < Math.abs(dy)) return;
+                    if (dx < 0) {
+                        showModalHeroPhoto(currentIdx + 1);
+                    } else {
+                        showModalHeroPhoto(currentIdx - 1);
+                    }
+                },
+                { passive: true }
+            );
+
+            heroSection.addEventListener(
+                'touchcancel',
+                function () {
+                    tracking = false;
+                },
+                { passive: true }
+            );
         }
     }
 
@@ -255,26 +702,41 @@
         });
     }
 
-    /** When map.json lists exactly one trail, keep a single title/kicker in the DOM (moved between layouts). */
+    /**
+     * Single #map-place-trail-heading moves between mobile strip, full-page mobile modal, and tablet panel.
+     */
     function initTrailHeadingPlacement(card, trailCount) {
-        if (trailCount !== 1) return;
+        if (trailCount !== 1) return function () {};
         var heading = document.getElementById('map-place-trail-heading');
         var am = document.getElementById('map-place-heading-anchor-mobile');
+        var amModal = document.getElementById('map-place-heading-anchor-mobile-modal');
         var at = document.getElementById('map-place-heading-anchor-tablet');
-        if (!heading || !am || !at) return;
+        var modalEl = document.getElementById('map-place-mobile-modal');
+        if (!heading || !am || !at || !amModal) return function () {};
 
         function place() {
             var wide = window.matchMedia('(min-width: 768px)').matches;
-            (wide ? at : am).appendChild(heading);
+            if (wide) {
+                card.classList.remove('is-detail-modal-open');
+                document.body.classList.remove('map-detail-modal-open');
+                if (modalEl) modalEl.setAttribute('aria-hidden', 'true');
+                at.appendChild(heading);
+                return;
+            }
+            if (card.classList.contains('is-detail-modal-open')) {
+                amModal.appendChild(heading);
+            } else {
+                am.appendChild(heading);
+            }
         }
 
         place();
         window.addEventListener('resize', place);
+        return place;
     }
 
     function wireShare(trail) {
-        var shareBtn = document.getElementById('map-place-share');
-        if (shareBtn) {
+        document.querySelectorAll('.js-map-place-share').forEach(function (shareBtn) {
             shareBtn.addEventListener('click', function () {
                 var payload = {
                     title: trail.title || document.title,
@@ -286,12 +748,13 @@
                     navigator.clipboard.writeText(payload.url).catch(function () {});
                 }
             });
-        }
+        });
     }
 
     /**
      * Per-trail fit tuning (locations.mapView.layout). Same keys work for every trail — copy the block in map.json.
      * Tablet: reserves space for the left side card so fitBounds uses the visible map pane.
+     * Phone: extra bottom inset so fitBounds doesn’t frame the route/marker under the bottom sheet.
      */
     function getMapLayout(trail) {
         var mv = trail && trail.locations && trail.locations.mapView;
@@ -302,6 +765,8 @@
         var trailPanelTop = 56;
         var overviewPad = 48;
         var trailPad = 8;
+        /** Space to leave above the bottom edge on narrow viewports (strip card + safe area). */
+        var mobileTrailFitBottomPx = 180;
         if (raw) {
             if (raw.panelReservePx != null) reserveX = Number(raw.panelReservePx);
             if (raw.panelReserveVwPct != null) vwPct = Number(raw.panelReserveVwPct);
@@ -309,6 +774,7 @@
             if (raw.trailFitPanelTopPx != null) trailPanelTop = Number(raw.trailFitPanelTopPx);
             if (raw.overviewEdgePaddingPx != null) overviewPad = Number(raw.overviewEdgePaddingPx);
             if (raw.trailEdgePaddingPx != null) trailPad = Number(raw.trailEdgePaddingPx);
+            if (raw.mobileTrailFitBottomPx != null) mobileTrailFitBottomPx = Number(raw.mobileTrailFitBottomPx);
         }
         return {
             reserveX: reserveX,
@@ -316,7 +782,8 @@
             reserveTop: reserveTop,
             trailPanelTop: trailPanelTop,
             overviewPad: overviewPad,
-            trailPad: trailPad
+            trailPad: trailPad,
+            mobileTrailFitBottomPx: mobileTrailFitBottomPx
         };
     }
 
@@ -376,7 +843,9 @@
         return fitOpts;
     }
 
-    /** Fit trail GeoJSON as large as possible in the map pane (minimal margin; tablet reserves side card). */
+    /**
+     * Fit trail GeoJSON as large as possible in the map pane (minimal margin; tablet reserves side card).
+     */
     function getTrailFitOptions(trail) {
         var mv = trail && trail.locations && trail.locations.mapView;
         var lo = getMapLayout(trail);
@@ -398,14 +867,34 @@
             pad = lo.trailPad;
         }
 
-        var opts = {
-            padding: [pad, pad],
-            maxZoom: maxZ
-        };
-        if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) {
+        var wide = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
+        var opts = { maxZoom: maxZ };
+        if (wide) {
             opts.paddingTopLeft = panelInsetForTrailFit(trail);
+            opts.paddingBottomRight = L.point(pad, pad);
+        } else {
+            var mb = lo.mobileTrailFitBottomPx;
+            if (mb == null || isNaN(mb) || mb < 80) mb = 180;
+            opts.paddingTopLeft = L.point(pad, pad);
+            opts.paddingBottomRight = L.point(pad, mb);
         }
         return opts;
+    }
+
+    /**
+     * Widen trail bounds before fitBounds so the route isn’t framed edge-to-edge.
+     * Set locations.mapView.trailFitBoundsPadRatio (e.g. 0.05 = 5% margin on each side → slightly less zoomed in).
+     */
+    function padBoundsForTrailFit(bounds, trail) {
+        if (!bounds || !bounds.isValid || !bounds.isValid()) {
+            return bounds;
+        }
+        var mv = trail && trail.locations && trail.locations.mapView;
+        var ratio = mv && mv.trailFitBoundsPadRatio != null ? Number(mv.trailFitBoundsPadRatio) : NaN;
+        if (isNaN(ratio) || ratio <= 0 || ratio > 0.5 || typeof bounds.pad !== 'function') {
+            return bounds;
+        }
+        return bounds.pad(ratio);
     }
 
     /** Initial camera: referenceView wins; else park bounds; else trail line. */
@@ -419,7 +908,7 @@
         if (getParkViewBounds(trail)) {
             fitParkView(map, trail, false);
         } else if (layer && layer.getBounds && layer.getBounds().isValid()) {
-            map.fitBounds(layer.getBounds(), getTrailFitOptions(trail));
+            map.fitBounds(padBoundsForTrailFit(layer.getBounds(), trail), getTrailFitOptions(trail));
         }
     }
 
@@ -434,33 +923,6 @@
             map.fitBounds(bounds, opts);
         }
         return true;
-    }
-
-    /**
-     * Marker click: zoom tighter than park overview — fit trail line if possible, else flyTo marker.
-     */
-    function zoomFromMarkerClick(map, trail, geoLayer, markerLatLng) {
-        if (!map) return;
-        var mv = trail.locations && trail.locations.mapView;
-
-        if (geoLayer && geoLayer.getBounds && geoLayer.getBounds().isValid()) {
-            var opts = getTrailFitOptions(trail);
-            if (map.flyToBounds) {
-                map.flyToBounds(geoLayer.getBounds(), opts);
-            } else {
-                map.fitBounds(geoLayer.getBounds(), opts);
-            }
-            return;
-        }
-
-        var z =
-            mv && mv.markerClickZoom != null ? Number(mv.markerClickZoom) : 18;
-        if (z < 1 || z > 22) z = 18;
-        if (map.flyTo) {
-            map.flyTo(markerLatLng, z);
-        } else {
-            map.setView(markerLatLng, z);
-        }
     }
 
     /**
@@ -532,9 +994,10 @@
                         trail.locations && trail.locations.directions
                             ? trail.locations.directions
                             : trail.directionsDestination;
-                    applyDirectionsAll(card, directionsTarget);
+                    var mapShell = card.closest('.map-shell');
+                    applyDirectionsAll(mapShell || card, directionsTarget);
                     wireShare(trail);
-                    initTrailHeadingPlacement(card, config.trails ? config.trails.length : 0);
+                    var placeHeading = initTrailHeadingPlacement(card, config.trails ? config.trails.length : 0);
 
                     var trailCenterLatLng = latlng;
 
@@ -550,33 +1013,11 @@
                               : trailCenterLatLng;
 
                     var connectorLayer = null;
-                    /** When true, skip drawing trail overlays until zoom/pan settles (marker open). */
-                    var deferTrailRevealUntilZoom = false;
-                    var trailRevealMoveEndHandler = null;
-
-                    function detachTrailRevealOnMoveEnd() {
-                        if (trailRevealMoveEndHandler && map) {
-                            map.off('moveend', trailRevealMoveEndHandler);
-                            trailRevealMoveEndHandler = null;
-                        }
-                    }
-
-                    /** After flyToBounds / zoom, reveal the path on the next moveend Leaflet emits. */
-                    function scheduleTrailRevealAfterZoom() {
-                        detachTrailRevealOnMoveEnd();
-                        trailRevealMoveEndHandler = function onTrailRevealMoveEnd() {
-                            detachTrailRevealOnMoveEnd();
-                            deferTrailRevealUntilZoom = false;
-                            syncTrailVisibility();
-                        };
-                        map.on('moveend', trailRevealMoveEndHandler);
-                    }
 
                     function syncTrailVisibility() {
                         if (!map || !card) return;
                         var cardOpen = card.classList.contains('is-open');
-                        /* Hide path while flying to bounds so the route appears once framing finishes. */
-                        var showTrail = cardOpen && !(deferTrailRevealUntilZoom && layer);
+                        var showTrail = cardOpen;
                         if (showTrail) {
                             if (layer && !map.hasLayer(layer)) {
                                 layer.addTo(map);
@@ -596,19 +1037,123 @@
 
                     var marker = L.marker(addressLatLng).addTo(map);
 
+                    var mobileModal = document.getElementById('map-place-mobile-modal');
+
+                    /** Small Leaflet preview in the mobile detail hero — same trail GeoJSON as the main map (no screenshot). */
+                    var detailMiniMap = null;
+                    var detailMiniTrailLayer = null;
+
+                    function fitDetailMiniMapToTrail() {
+                        if (!detailMiniMap || !detailMiniTrailLayer) return;
+                        var b = detailMiniTrailLayer.getBounds();
+                        if (!b.isValid()) return;
+                        var mv = trail.locations && trail.locations.mapView;
+                        var maxZ = 17;
+                        if (mv && mv.maxZoom != null) {
+                            maxZ = Math.min(Number(mv.maxZoom), 17);
+                        }
+                        detailMiniMap.fitBounds(padBoundsForTrailFit(b, trail), {
+                            padding: [8, 8],
+                            maxZoom: maxZ
+                        });
+                    }
+
+                    function refreshDetailMiniMapInModal() {
+                        var wrap = document.querySelector('.map-place-detail__mini-map-wrap');
+                        var el = document.getElementById('map-place-detail-mini-map');
+                        if (!wrap || !el) return;
+
+                        if (!geo) {
+                            wrap.hidden = true;
+                            return;
+                        }
+
+                        wrap.hidden = false;
+
+                        if (!detailMiniMap) {
+                            detailMiniMap = L.map(el, {
+                                zoomControl: false,
+                                attributionControl: false,
+                                dragging: false,
+                                touchZoom: false,
+                                scrollWheelZoom: false,
+                                doubleClickZoom: false,
+                                boxZoom: false,
+                                keyboard: false,
+                                tap: false
+                            });
+                            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: ''
+                            }).addTo(detailMiniMap);
+                            detailMiniTrailLayer = geoJsonToDoubleLineLayer(
+                                geo,
+                                mergeStyle(trail.style),
+                                5
+                            ).addTo(detailMiniMap);
+                            fitDetailMiniMapToTrail();
+                        }
+
+                        requestAnimationFrame(function () {
+                            requestAnimationFrame(function () {
+                                if (!detailMiniMap) return;
+                                detailMiniMap.invalidateSize(false);
+                                fitDetailMiniMapToTrail();
+                            });
+                        });
+                    }
+
+                    function openMobileDetailModal() {
+                        if (!card) return;
+                        if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) return;
+                        card.classList.add('is-detail-modal-open');
+                        document.body.classList.add('map-detail-modal-open');
+                        if (mobileModal) mobileModal.setAttribute('aria-hidden', 'false');
+                        placeHeading();
+                        refreshDetailMiniMapInModal();
+                    }
+
+                    function closeMobileDetailModal() {
+                        if (!card) return;
+                        card.classList.remove('is-detail-modal-open');
+                        document.body.classList.remove('map-detail-modal-open');
+                        if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
+                        placeHeading();
+                    }
+
+                    var miniMapWrap = document.querySelector('.map-place-detail__mini-map-wrap');
+                    if (miniMapWrap && geo && !miniMapWrap.dataset.backToMapWired) {
+                        miniMapWrap.dataset.backToMapWired = '1';
+                        miniMapWrap.addEventListener(
+                            'click',
+                            function (ev) {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                closeMobileDetailModal();
+                            },
+                            true
+                        );
+                    }
+
                     function openCard() {
                         if (!card) return;
+                        card.classList.remove('is-detail-modal-open');
+                        document.body.classList.remove('map-detail-modal-open');
+                        if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
                         card.classList.add('is-open');
                         card.setAttribute('aria-hidden', 'false');
+                        placeHeading();
                         syncTrailVisibility();
                     }
 
                     function closeCard() {
                         if (!card) return;
-                        detachTrailRevealOnMoveEnd();
-                        deferTrailRevealUntilZoom = false;
+                        card.classList.remove('is-detail-modal-open');
+                        document.body.classList.remove('map-detail-modal-open');
+                        if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
                         card.classList.remove('is-open');
                         card.setAttribute('aria-hidden', 'true');
+                        placeHeading();
                         syncTrailVisibility();
                     }
 
@@ -620,16 +1165,28 @@
                         });
                     });
 
+                    document.querySelectorAll('.js-map-place-modal-back, .js-map-place-modal-dismiss').forEach(function (btn) {
+                        btn.addEventListener('click', function (ev) {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            closeMobileDetailModal();
+                        });
+                    });
+
+                    var mobileStrip = card.querySelector('.map-place-card__mobile');
+                    if (mobileStrip) {
+                        mobileStrip.addEventListener('click', function (ev) {
+                            if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) return;
+                            if (ev.target.closest('.js-map-place-close')) return;
+                            if (ev.target.closest('.js-map-directions')) return;
+                            if (ev.target.closest('a[href]')) return;
+                            openMobileDetailModal();
+                        });
+                    }
+
                     marker.on('click', function (ev) {
                         L.DomEvent.stopPropagation(ev);
-                        detachTrailRevealOnMoveEnd();
-                        deferTrailRevealUntilZoom = !!layer;
                         openCard();
-                        /* Listen before triggering fly/zoom so a synchronous moveend is not skipped. */
-                        if (deferTrailRevealUntilZoom) {
-                            scheduleTrailRevealAfterZoom();
-                        }
-                        zoomFromMarkerClick(map, trail, layer, latlng);
                     });
 
                     map.on('click', function () {
