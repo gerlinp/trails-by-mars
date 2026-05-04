@@ -81,10 +81,12 @@
 
 
         <div class="map-shell">
-            <div id="map"></div>
-            <p class="map-osm-credit">
-                Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-            </p>
+            <div class="map-shell__stage">
+                <div id="map"></div>
+                <p class="map-osm-credit">
+                    Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                </p>
+            </div>
             <aside class="map-place-card" id="map-place-card" aria-hidden="true">
                 <div class="map-place-card__inner">
                     <!-- Compact strip — phones / small screens -->
@@ -92,10 +94,10 @@
                         <figure class="map-place-card__thumb">
                             <img
                                 class="map-place-card__img"
-                                src="images/folio/gallery/pf-01.jpg"
+                                src="images/trails/pond-meadow-02.jpeg"
                                 width="128"
                                 height="128"
-                                alt=""
+                                alt="Wooded stretch at Pond Meadow Park"
                                 decoding="async"
                             >
                         </figure>
@@ -108,10 +110,25 @@
                             <div class="map-place-card__head">
                                 <div class="map-place-card__copy">
                                     <div id="map-place-heading-anchor-mobile" class="map-place-card__heading-anchor"></div>
-                                    <p class="text-body-sm map-place-card__detail map-place-card__detail--mobile">1.9 mi · Est. 40 min · Loop</p>
+                                    <div class="map-place-card__strip-meta">
+                                        <span class="map-place-card__difficulty-badge" data-map-strip-difficulty-wrap hidden>
+                                            <span class="map-place-card__difficulty-dot" aria-hidden="true"></span>
+                                            <span class="map-place-card__difficulty-label"></span>
+                                        </span>
+                                        <span class="map-place-card__meta-sep" data-map-strip-difficulty-sep hidden aria-hidden="true">·</span>
+                                        <p class="text-body-sm map-place-card__detail map-place-card__detail--mobile">1.9 mi · Est. 40 min · Loop</p>
+                                    </div>
                                 </div>
                                 <div class="map-place-card__head-actions">
-                                    <a class="map-place-card__directions js-map-directions" href="#" target="_blank" rel="noopener noreferrer">Directions</a>
+                                    <a
+                                        class="map-place-card__directions btn btn--primary btn--small js-map-directions"
+                                        href="#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        >Directions</a>
+                                    <button type="button" class="map-place-card__info-btn btn btn--stroke btn--small js-map-place-more-info" aria-label="Open trail info">
+                                        Info
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -136,9 +153,7 @@
                         <div class="map-place-card__tablet-scroll">
                             <div id="map-place-heading-anchor-tablet" class="map-place-card__heading-anchor">
                                 <div id="map-place-trail-heading" class="map-place-card__trail-heading">
-                                    <h2 class="map-place-card__title">Pond Meadow Paved Trail</h2>
-                                    <p class="text-pretitle map-place-card__subtitle map-place-card__kicker">Pond Meadow Park</p>
-                                    <p class="map-place-card__postal text-body-sm"></p>
+                                    <h2 class="map-place-card__title">Pond Meadow Park</h2>
                                 </div>
                             </div>
 
@@ -205,7 +220,34 @@
                                 </svg>
                             </button>
                         </div>
-                        <img class="map-place-detail__hero-img" src="" alt="" width="1200" height="600" decoding="async">
+                        <div class="map-place-detail__hero-gallery">
+                            <button
+                                type="button"
+                                class="map-place-detail__hero-gallery-nav map-place-detail__hero-gallery-prev js-map-detail-gallery-prev"
+                                aria-label="Previous photo"
+                            >
+                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div
+                                class="map-place-detail__hero-img-wrap js-map-detail-gallery-open"
+                                role="button"
+                                tabindex="0"
+                                aria-label="View photo full size"
+                            >
+                                <img class="map-place-detail__hero-img" src="" alt="" width="1200" height="600" decoding="async">
+                            </div>
+                            <button
+                                type="button"
+                                class="map-place-detail__hero-gallery-nav map-place-detail__hero-gallery-next js-map-detail-gallery-next"
+                                aria-label="Next photo"
+                            >
+                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="map-place-detail__hero-footer">
                             <div class="map-place-detail__photo-dots"></div>
                             <div class="map-place-detail__mini-map-wrap" hidden title="Back to map">
@@ -249,6 +291,13 @@
 
                         <p class="map-place-detail__description map-place-card__description"></p>
 
+                        <a
+                            class="map-place-detail__cta-directions js-map-directions"
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Get directions</a>
+
                         <section class="map-place-weather" hidden aria-labelledby="map-place-weather-heading" data-map-weather>
                             <div class="map-place-weather__card">
                                 <h2 id="map-place-weather-heading" class="map-place-weather__title">Weather</h2>
@@ -286,8 +335,6 @@
                                 </p>
                             </div>
                         </section>
-
-                        <a class="map-place-detail__cta-directions btn js-map-directions" href="#" target="_blank" rel="noopener noreferrer">Get directions</a>
                     </div>
                 </div>
             </div>

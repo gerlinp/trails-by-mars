@@ -3,7 +3,7 @@
   "trails": [
     {
       "id": "pond-meadow-paved",
-      "title": "Pond Meadow Paved Trail",
+      "title": "Pond Meadow Park",
       "locationLabel": "Pond Meadow Park",
       "breadcrumbs": "United States / Massachusetts / Pond Meadow Park",
       "difficultyLabel": "Easy",
@@ -34,21 +34,25 @@
         }
       },
       "thumb": {
-        "src": "images/folio/gallery/pf-01.jpg",
-        "alt": "Trail preview, Pond Meadow Paved Trail"
+        "src": "images/trails/pond-meadow-02.jpeg",
+        "alt": "Wooded stretch at Pond Meadow Park"
       },
       "gallery": [
         {
-          "src": "images/folio/gallery/pf-01.jpg",
-          "alt": "Pond Meadow paved path along the water"
+          "src": "images/trails/pond-meadow-02.jpeg",
+          "alt": "Wooded stretch at Pond Meadow Park"
         },
         {
-          "src": "images/folio/gallery/pf-02.jpg",
-          "alt": "Trees along Pond Meadow trail"
+          "src": "images/trails/pond-meadow-01.jpeg",
+          "alt": "Pond Meadow Park trail along the water"
         },
         {
-          "src": "images/folio/gallery/pjpp-01.jpg",
-          "alt": "Boardwalk and greenery"
+          "src": "images/trails/pond-meadow-03.jpeg",
+          "alt": "Pond Meadow Park path and scenery"
+        },
+        {
+          "src": "images/trails/pond-meadow-04.jpeg",
+          "alt": "Pond Meadow Park trail view"
         }
       ],
       "metrics": {
