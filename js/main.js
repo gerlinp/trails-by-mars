@@ -42,6 +42,7 @@
         const hero = document.querySelector('#intro');
         let triggerHeight;
 
+        if (document.body.classList.contains('page-maps')) return;
         if (!(hdr && hero)) return;
 
         setTimeout(function() {

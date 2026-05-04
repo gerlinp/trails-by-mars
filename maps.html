@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js" >
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Trail Blazing Mom | Family-Friendly Stroller Paths in Boston</title>
+        <meta name="description" content="Discover the best family-friendly stroller paths in Boston with Trail Blazing Mom. Explore scenic trails perfect for moms and kids, featuring easy routes and beautiful views.">
+        <meta name="keywords" content="family-friendly paths, stroller trails, Boston, moms, outdoor activities, stroller-friendly trails, nature walks">
+        <meta property="og:title" content="Family-Friendly Stroller Paths in Boston | Trail Blazing Mom">
+        <meta property="og:description" content="Explore the best stroller-friendly trails in Boston for moms and families.">
+        <meta property="og:image" content="images/folio/gallery/pf-01.jpg">
+        <meta property="og:url" content="https://trailblazingmom.com">
+        <meta property="og:type" content="website">
+        <link rel="canonical" href="https://trailblazingmom.com">
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Guide",
+          "name": "Family-Friendly Stroller Paths in Boston",
+          "description": "A guide to the best stroller-friendly trails in Boston for moms and families.",
+          "author": {
+            "@type": "Person",
+            "name": "Marsha G Harrison"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Trail Blazing Mom"
+          },
+          "keywords": "family-friendly paths, stroller trails, Boston, moms, outdoor activities"
+        }
+        </script>
+        <link rel="stylesheet" href="css/vendor.css">
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" href="css/maps.css">
+        <link rel="icon" type="image/png" sizes="32x32" href="images/momicon.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="images/momicon.png">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    </head>
+
+<body id="top" class="page-maps">
+
+
+    <div id="page" class="s-pagewrap">
+
+
+        <!-- # site header 
+        ================================================== -->
+        <header class="s-header">
+            <div class="row s-header__inner">
+
+                <div class="s-header__block">
+                    <div class="s-header__logo">
+                        <a class="logo" href="index.html">
+                            TRAIL BLAZING MOM
+                        </a>
+                    </div>
+
+                    <a class="s-header__menu-toggle" href="#0"><span>Menu</span></a>
+                </div> <!-- end s-header__block -->
+
+                <nav class="s-header__nav">    
+                    <ul class="s-header__menu-links">
+                        <li class="current"><a href="index.html#intro">Home</a></li>
+                        <li><a href="index.html#blog">Blog</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#works">Gallery</a></li>
+                        <li><a href="index.html#events">Events</a></li>
+                        <li><a href="index.html#guide">Guide</a></li>
+                        <li><a href="index.html#footer">Contact</a></li>
+                    </ul> <!-- s-header__menu-links -->    
+                </nav> <!-- end s-header__nav -->
+
+            </div> <!-- end s-header__inner -->
+        </header> <!-- end s-header -->
+
+
+
+
+
+
+        <div class="map-shell">
+            <div id="map"></div>
+            <p class="map-osm-credit">
+                Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+            </p>
+            <aside class="map-place-card" id="map-place-card" aria-hidden="true">
+                <div class="map-place-card__inner">
+                    <!-- Compact strip — phones / small screens -->
+                    <div class="map-place-card__mobile">
+                        <figure class="map-place-card__thumb">
+                            <img
+                                class="map-place-card__img"
+                                src="images/folio/gallery/pf-01.jpg"
+                                width="128"
+                                height="128"
+                                alt=""
+                                decoding="async"
+                            >
+                        </figure>
+                        <div class="map-place-card__content">
+                            <div class="map-place-card__head">
+                                <div class="map-place-card__copy">
+                                    <div id="map-place-heading-anchor-mobile" class="map-place-card__heading-anchor"></div>
+                                    <p class="text-body-sm map-place-card__detail map-place-card__detail--mobile">1.9 mi · Est. 40 min · Loop</p>
+                                </div>
+                                <div class="map-place-card__head-actions">
+                                    <button type="button" class="map-place-card__close js-map-place-close" aria-label="Close trail details">×</button>
+                                    <a class="map-place-card__directions js-map-directions" href="#" target="_blank" rel="noopener noreferrer">Directions</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side panel — tablet & desktop (AllTrails-style) -->
+                    <div class="map-place-card__tablet">
+                        <header class="map-place-card__toolbar">
+                            <a class="map-place-card__toolbar-link" href="index.html" aria-label="Back to home">← Back</a>
+                            <span class="map-place-card__toolbar-fill" aria-hidden="true"></span>
+                            <button type="button" class="map-place-card__close map-place-card__close--toolbar js-map-place-close" aria-label="Close trail details">×</button>
+                        </header>
+                        <div class="map-place-card__tablet-scroll">
+                            <div id="map-place-heading-anchor-tablet" class="map-place-card__heading-anchor">
+                                <div id="map-place-trail-heading" class="map-place-card__trail-heading">
+                                    <h2 class="map-place-card__title">Pond Meadow Paved Trail</h2>
+                                    <p class="text-pretitle map-place-card__subtitle map-place-card__kicker">Pond Meadow Park</p>
+                                    <p class="map-place-card__postal text-body-sm"></p>
+                                </div>
+                            </div>
+
+                            <div class="map-place-card__actions" role="toolbar" aria-label="Trail actions">
+                                <a class="btn btn--primary btn--small js-map-directions" href="#" target="_blank" rel="noopener noreferrer">Directions</a>
+                                <button type="button" class="btn btn--stroke btn--small" id="map-place-share">Share</button>
+                            </div>
+
+                            <div class="map-place-card__gallery">
+                                <img class="map-place-card__gallery-main" src="" alt="" width="320" height="200" decoding="async">
+                                <div class="map-place-card__gallery-stack">
+                                    <img class="map-place-card__gallery-sub" src="" alt="" width="160" height="96" decoding="async">
+                                    <img class="map-place-card__gallery-sub" src="" alt="" width="160" height="96" decoding="async">
+                                </div>
+                            </div>
+
+                            <dl class="map-place-card__metrics">
+                                <div class="map-place-card__metric">
+                                    <dt class="map-place-card__metric-label">Length</dt>
+                                    <dd class="map-place-card__metric-value" data-map-metric="length">—</dd>
+                                </div>
+                                <div class="map-place-card__metric">
+                                    <dt class="map-place-card__metric-label">Est. time</dt>
+                                    <dd class="map-place-card__metric-value" data-map-metric="estimatedTime">—</dd>
+                                </div>
+                                <div class="map-place-card__metric">
+                                    <dt class="map-place-card__metric-label">Route type</dt>
+                                    <dd class="map-place-card__metric-value" data-map-metric="routeType">—</dd>
+                                </div>
+                            </dl>
+
+                            <p class="map-place-card__description"></p>
+
+                            <a class="btn btn--primary map-place-card__more" href="index.html#guide">Show more details</a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </div> <!-- end page-wrap -->
+
+
+    <!-- Java Script
+    ================================================== -->
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Guide",
+          "name": "Family-Friendly Stroller Paths in Boston",
+          "description": "A guide to the best stroller-friendly trails in Boston for moms and families.",
+          "author": {
+            "@type": "Person",
+            "name": "Marsha G Harrison"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Trail Blazing Mom"
+          },
+          "keywords": "family-friendly paths, stroller trails, Boston, moms, outdoor activities"
+        }
+    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>   
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/maps.js"></script>
+
+</body>
+</html>
