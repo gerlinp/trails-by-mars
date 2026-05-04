@@ -42,6 +42,7 @@
         const hero = document.querySelector('#intro');
         let triggerHeight;
 
+        if (document.body.classList.contains('page-maps')) return;
         if (!(hdr && hero)) return;
 
         setTimeout(function() {
@@ -315,14 +316,3 @@
     
 
 })(document.documentElement);
-
-
-
-
-
-var map = L.map('map').setView([51.505, -0.09], 13);
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);

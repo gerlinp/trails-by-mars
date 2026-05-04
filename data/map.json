@@ -1,0 +1,69 @@
+{
+  "defaultTrailId": "pond-meadow-paved",
+  "trails": [
+    {
+      "id": "pond-meadow-paved",
+      "title": "Pond Meadow Paved Trail",
+      "locationLabel": "Pond Meadow Park",
+      "locations": {
+        "directions": "Pond Meadow Park, 470 Liberty St, Braintree, MA 02184, USA",
+        "postalAddress": "470 Liberty St, Braintree, MA 02184",
+        "addressMarker": {
+          "lat": 42.2046514,
+          "lng": -70.9824074
+        },
+        "accessRouteGeojsonUrl": "data/trails/pond-meadow-paved-access.geojson",
+        "mapView": {
+          "bounds": {
+            "southWest": { "lat": 42.2007, "lng": -70.9846 },
+            "northEast": { "lat": 42.2102, "lng": -70.9709 }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "thumb": {
+        "src": "images/folio/gallery/pf-01.jpg",
+        "alt": "Trail preview, Pond Meadow Paved Trail"
+      },
+      "gallery": [
+        {
+          "src": "images/folio/gallery/pf-01.jpg",
+          "alt": "Pond Meadow paved path along the water"
+        },
+        {
+          "src": "images/folio/gallery/pf-02.jpg",
+          "alt": "Trees along Pond Meadow trail"
+        },
+        {
+          "src": "images/folio/gallery/pjpp-01.jpg",
+          "alt": "Boardwalk and greenery"
+        }
+      ],
+      "metrics": {
+        "length": "1.9 mi",
+        "estimatedTime": "40–60 min",
+        "routeType": "Loop"
+      },
+      "description": "This is a beautiful paved trail around the pond—easy rolling terrain with views of the water and shaded woodland stretches.",
+      "detail": "1.9 mi · Est. 40 min · Loop",
+      "moreDetailsHref": "index.html#guide",
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      },
+      "gpxUrl": "data/trails/Pond Meadow Park Loop.gpx",
+      "geojsonUrl": "data/trails/pond-meadow-paved.geojson"
+    }
+  ]
+}
