@@ -1293,6 +1293,9 @@
                     function updateCardDockPosition() {
                         if (!card || !map || !marker) return;
 
+                        var dockToMarkerWide =
+                            window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
+
                         function applyDockBottom() {
                             if (!map || !marker || !card) return;
                             var pt = map.latLngToContainerPoint(marker.getLatLng());
@@ -1301,6 +1304,11 @@
                             if (!isFinite(raw)) return;
                             raw = Math.max(48, Math.min(raw, sz.y - 16));
                             card.style.setProperty('--map-card-dock-bottom', raw + 'px');
+                        }
+
+                        if (!dockToMarkerWide) {
+                            card.style.removeProperty('--map-card-dock-bottom');
+                            return;
                         }
 
                         if (card.classList.contains('is-open')) {
