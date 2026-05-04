@@ -189,26 +189,63 @@
         }
     }
 
+    /** Park/area label for UI (prefer over internal route `title`). */
+    function trailDisplayName(trail) {
+        if (!trail) return '';
+        return trail.locationLabel || trail.title || '';
+    }
+
+    function isWideMapStrip() {
+        return typeof window.matchMedia !== 'undefined' && window.matchMedia('(min-width: 768px)').matches;
+    }
+
+    /** Compact strip on tablet/desktop: length · estimated time only (no street address). */
+    function stripSummaryLine(trail) {
+        if (!trail) return '';
+        var m = trail.metrics || {};
+        var parts = [];
+        if (m.length) parts.push(m.length);
+        if (m.estimatedTime) {
+            var et = String(m.estimatedTime).trim();
+            parts.push(/^est\./i.test(et) ? et : 'Est. ' + et);
+        }
+        return parts.join(' · ');
+    }
+
+    function updateStripDetailLine(trail, card) {
+        if (!trail || !card) return;
+        var detailEl = card.querySelector('.map-place-card__detail--mobile');
+        if (!detailEl) return;
+        detailEl.textContent = isWideMapStrip() ? stripSummaryLine(trail) || trail.detail || '' : trail.detail || '';
+    }
+
     function populateCard(trail, card) {
         if (!trail || !card) return;
 
+        var displayName = trailDisplayName(trail);
         var modal = document.getElementById('map-place-mobile-modal');
         var roots = modal ? [card, modal] : [card];
 
-        var loc = trail.locations || {};
-        var postal = loc.postalAddress || '';
-
         roots.forEach(function (root) {
-            setTextAll(root, '.map-place-card__title', trail.title || '');
-            setTextAll(root, '.map-place-card__kicker', trail.locationLabel || '');
-            setTextAll(root, '.map-place-card__postal', postal);
-            root.querySelectorAll('.map-place-card__postal').forEach(function (el) {
-                if (el) el.hidden = !postal;
-            });
+            setTextAll(root, '.map-place-card__title', displayName);
         });
 
-        var detailEl = card.querySelector('.map-place-card__detail--mobile');
-        if (detailEl) detailEl.textContent = trail.detail || '';
+        updateStripDetailLine(trail, card);
+
+        var diffWrap = card.querySelector('[data-map-strip-difficulty-wrap]');
+        var diffLabel = card.querySelector('.map-place-card__difficulty-label');
+        var diffSep = card.querySelector('[data-map-strip-difficulty-sep]');
+        if (diffWrap && diffLabel) {
+            var diff = trail.difficultyLabel;
+            if (diff) {
+                diffWrap.hidden = false;
+                diffLabel.textContent = diff;
+                if (diffSep) diffSep.hidden = false;
+            } else {
+                diffWrap.hidden = true;
+                if (diffSep) diffSep.hidden = true;
+            }
+        }
 
         var imgEl = card.querySelector('.map-place-card__img');
         if (imgEl && trail.thumb) {
@@ -221,7 +258,7 @@
             root.querySelectorAll('.map-place-card__gallery-main').forEach(function (mainG) {
                 if (mainG && gallery[0]) {
                     mainG.src = gallery[0].src || '';
-                    mainG.alt = gallery[0].alt != null ? gallery[0].alt : trail.title || '';
+                    mainG.alt = gallery[0].alt != null ? gallery[0].alt : displayName;
                 }
             });
         });
@@ -236,7 +273,7 @@
             var item = gallery[idx] || gallery[0];
             if (item && subs[g]) {
                 subs[g].src = item.src || '';
-                subs[g].alt = item.alt != null ? item.alt : trail.title || '';
+                subs[g].alt = item.alt != null ? item.alt : displayName;
             }
         }
 
@@ -259,7 +296,7 @@
         var heroModal = modal && modal.querySelector('.map-place-detail__hero-img');
         if (heroModal && gallery[0]) {
             heroModal.src = gallery[0].src || '';
-            heroModal.alt = gallery[0].alt != null ? gallery[0].alt : trail.title || '';
+            heroModal.alt = gallery[0].alt != null ? gallery[0].alt : displayName;
         }
 
         populateMobileDetailFields(trail);
@@ -586,31 +623,248 @@
         }
     }
 
+    function stopMapHeroGalleryAutoplay(modalEl) {
+        var modal = modalEl || document.getElementById('map-place-mobile-modal');
+        if (!modal) return;
+        var tid = modal.getAttribute('data-hero-gallery-autoplay-id');
+        if (tid != null && tid !== '') {
+            clearInterval(Number(tid));
+            modal.removeAttribute('data-hero-gallery-autoplay-id');
+        }
+    }
+
     function setupMobileDetailInteractions(trail) {
         var modal = document.getElementById('map-place-mobile-modal');
         if (!modal || !trail) return;
 
+        stopMapHeroGalleryAutoplay(modal);
+
         var gallery =
             trail.gallery && trail.gallery.length ? trail.gallery : trail.thumb ? [trail.thumb] : [];
         var heroImg = modal.querySelector('.map-place-detail__hero-img');
+        var heroImgWrap = modal.querySelector('.js-map-detail-gallery-open');
+        var galleryPrevBtn = modal.querySelector('.js-map-detail-gallery-prev');
+        var galleryNextBtn = modal.querySelector('.js-map-detail-gallery-next');
         var dots = modal.querySelector('.map-place-detail__photo-dots');
         var heroSection = modal.querySelector('.map-place-detail__hero');
-        var currentIdx = 0;
 
-        function showModalHeroPhoto(index) {
-            if (!heroImg || !gallery.length) return;
-            var n = gallery.length;
-            var i = ((index % n) + n) % n;
-            currentIdx = i;
-            var item = gallery[i];
-            heroImg.src = item.src || '';
-            heroImg.alt = item.alt != null ? item.alt : trail.title || '';
+        if (galleryPrevBtn && galleryNextBtn) {
+            var showGalleryNav = gallery.length > 1;
+            galleryPrevBtn.hidden = !showGalleryNav;
+            galleryNextBtn.hidden = !showGalleryNav;
+        }
+        var currentIdx = 0;
+        var galleryAutoplayMs = 12000;
+        var heroImgAnimBusy = false;
+        var heroImgAnimQueued = null;
+
+        function applyModalHeroDots(i) {
             if (dots) {
                 var all = dots.querySelectorAll('.map-place-detail__dot');
                 for (var j = 0; j < all.length; j++) {
                     all[j].classList.toggle('is-active', j === i);
                 }
             }
+            if (heroImgWrap && gallery.length) {
+                heroImgWrap.setAttribute(
+                    'aria-label',
+                    gallery.length > 1
+                        ? 'Open photo ' + (i + 1) + ' of ' + gallery.length + ' full size'
+                        : 'View photo full size'
+                );
+            }
+        }
+
+        function applyModalHeroPhotoInstant(i) {
+            var item = gallery[i];
+            currentIdx = i;
+            heroImg.src = item.src || '';
+            heroImg.alt = item.alt != null ? item.alt : trailDisplayName(trail);
+            heroImg.style.opacity = '1';
+            applyModalHeroDots(i);
+        }
+
+        function drainHeroImgAnimQueue() {
+            heroImgAnimBusy = false;
+            if (heroImgAnimQueued == null) return;
+            var next = heroImgAnimQueued;
+            heroImgAnimQueued = null;
+            if (next !== currentIdx) {
+                showModalHeroPhoto(next);
+            }
+        }
+
+        function runModalHeroPhotoFade(i) {
+            heroImgAnimBusy = true;
+            heroImg.style.opacity = '0';
+
+            function onFadeOut(ev) {
+                if (ev.propertyName !== 'opacity') return;
+                var item = gallery[i];
+                currentIdx = i;
+                heroImg.alt = item.alt != null ? item.alt : trailDisplayName(trail);
+                heroImg.src = item.src || '';
+                applyModalHeroDots(i);
+
+                function fadeIn() {
+                    function onFadeIn(ev2) {
+                        if (ev2.propertyName !== 'opacity') return;
+                        heroImg.removeEventListener('transitionend', onFadeIn);
+                        drainHeroImgAnimQueue();
+                    }
+
+                    heroImg.addEventListener('transitionend', onFadeIn, { passive: true });
+
+                    requestAnimationFrame(function () {
+                        heroImg.style.opacity = '1';
+                    });
+                }
+
+                if (heroImg.complete && heroImg.naturalWidth > 0) {
+                    requestAnimationFrame(fadeIn);
+                } else {
+                    heroImg.addEventListener(
+                        'load',
+                        function () {
+                            requestAnimationFrame(fadeIn);
+                        },
+                        { once: true }
+                    );
+                    heroImg.addEventListener(
+                        'error',
+                        function () {
+                            requestAnimationFrame(fadeIn);
+                        },
+                        { once: true }
+                    );
+                }
+            }
+
+            heroImg.addEventListener('transitionend', onFadeOut, { once: true, passive: true });
+        }
+
+        function showModalHeroPhoto(index) {
+            if (!heroImg || !gallery.length) return;
+            var n = gallery.length;
+            var i = ((index % n) + n) % n;
+
+            var reduceMotion =
+                window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (reduceMotion || n <= 1) {
+                heroImgAnimQueued = null;
+                heroImgAnimBusy = false;
+                applyModalHeroPhotoInstant(i);
+                return;
+            }
+
+            if (i === currentIdx && !heroImgAnimBusy && heroImg.style.opacity !== '0') {
+                return;
+            }
+
+            if (heroImgAnimBusy) {
+                heroImgAnimQueued = i;
+                return;
+            }
+
+            runModalHeroPhotoFade(i);
+        }
+
+        function startMapHeroGalleryAutoplay() {
+            stopMapHeroGalleryAutoplay(modal);
+            if (gallery.length <= 1 || !heroImg) return;
+            if (
+                window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ) {
+                return;
+            }
+            var autoplayId = setInterval(function () {
+                showModalHeroPhoto(currentIdx + 1);
+            }, galleryAutoplayMs);
+            modal.setAttribute('data-hero-gallery-autoplay-id', String(autoplayId));
+        }
+
+        modal._mapHeroGalleryStartAutoplay = startMapHeroGalleryAutoplay;
+
+        function openDetailGalleryFullscreen() {
+            if (!gallery.length) return;
+            var displayName = trailDisplayName(trail);
+            var elems = [];
+            for (var gi = 0; gi < gallery.length; gi++) {
+                var gitem = gallery[gi];
+                if (!gitem || !gitem.src) continue;
+                elems.push({
+                    href: gitem.src,
+                    type: 'image',
+                    title: displayName,
+                    alt: gitem.alt != null ? gitem.alt : displayName
+                });
+            }
+            if (!elems.length) return;
+
+            var startIdx = Math.min(Math.max(0, currentIdx), elems.length - 1);
+
+            if (typeof GLightbox !== 'undefined') {
+                var lb = GLightbox({
+                    elements: elems,
+                    loop: elems.length > 1,
+                    touchNavigation: true,
+                    zoomable: true
+                });
+                if (typeof lb.openAt === 'function') {
+                    lb.openAt(startIdx);
+                } else {
+                    lb.open();
+                }
+            } else {
+                var cur = gallery[startIdx];
+                if (cur && cur.src) {
+                    window.open(cur.src, '_blank', 'noopener,noreferrer');
+                }
+            }
+        }
+
+        modal._mapDetailGalleryControl = {
+            prev: function () {
+                showModalHeroPhoto(currentIdx - 1);
+                startMapHeroGalleryAutoplay();
+            },
+            next: function () {
+                showModalHeroPhoto(currentIdx + 1);
+                startMapHeroGalleryAutoplay();
+            },
+            open: openDetailGalleryFullscreen
+        };
+
+        if (!modal.dataset.mapDetailGalleryChromeWired) {
+            modal.dataset.mapDetailGalleryChromeWired = '1';
+            modal.addEventListener('click', function (ev) {
+                var ctl = modal._mapDetailGalleryControl;
+                if (!ctl) return;
+                if (ev.target.closest('.js-map-detail-gallery-prev')) {
+                    ev.preventDefault();
+                    ctl.prev();
+                    return;
+                }
+                if (ev.target.closest('.js-map-detail-gallery-next')) {
+                    ev.preventDefault();
+                    ctl.next();
+                    return;
+                }
+                if (ev.target.closest('.js-map-detail-gallery-open')) {
+                    ev.preventDefault();
+                    ctl.open();
+                }
+            });
+            modal.addEventListener('keydown', function (ev) {
+                if (ev.key !== 'Enter' && ev.key !== ' ') return;
+                var wrap = ev.target.closest('.js-map-detail-gallery-open');
+                if (!wrap || !modal.contains(wrap)) return;
+                ev.preventDefault();
+                var ctlK = modal._mapDetailGalleryControl;
+                if (ctlK) ctlK.open();
+            });
         }
 
         if (dots) {
@@ -624,9 +878,13 @@
                 b.addEventListener('click', function (ev) {
                     ev.stopPropagation();
                     showModalHeroPhoto(i);
+                    startMapHeroGalleryAutoplay();
                 });
                 dots.appendChild(b);
             });
+            applyModalHeroDots(0);
+        } else if (gallery.length) {
+            applyModalHeroDots(0);
         }
 
         /* Full-page mobile modal only: swipe hero photo left/right (not tablet strip/gallery). */
@@ -678,6 +936,7 @@
                     } else {
                         showModalHeroPhoto(currentIdx - 1);
                     }
+                    startMapHeroGalleryAutoplay();
                 },
                 { passive: true }
             );
@@ -717,10 +976,11 @@
         function place() {
             var wide = window.matchMedia('(min-width: 768px)').matches;
             if (wide) {
-                card.classList.remove('is-detail-modal-open');
-                document.body.classList.remove('map-detail-modal-open');
-                if (modalEl) modalEl.setAttribute('aria-hidden', 'true');
-                at.appendChild(heading);
+                if (card.classList.contains('is-detail-modal-open')) {
+                    amModal.appendChild(heading);
+                } else {
+                    am.appendChild(heading);
+                }
                 return;
             }
             if (card.classList.contains('is-detail-modal-open')) {
@@ -739,7 +999,7 @@
         document.querySelectorAll('.js-map-place-share').forEach(function (shareBtn) {
             shareBtn.addEventListener('click', function () {
                 var payload = {
-                    title: trail.title || document.title,
+                    title: trailDisplayName(trail) || document.title,
                     url: window.location.href
                 };
                 if (navigator.share) {
@@ -753,7 +1013,6 @@
 
     /**
      * Per-trail fit tuning (locations.mapView.layout). Same keys work for every trail — copy the block in map.json.
-     * Tablet: reserves space for the left side card so fitBounds uses the visible map pane.
      * Phone: extra bottom inset so fitBounds doesn’t frame the route/marker under the bottom sheet.
      */
     function getMapLayout(trail) {
@@ -837,14 +1096,11 @@
         var fitOpts = { padding: [lo.overviewPad, lo.overviewPad], maxZoom: 16 };
         var mv = trail && trail.locations && trail.locations.mapView;
         if (mv && mv.maxZoom != null) fitOpts.maxZoom = mv.maxZoom;
-        if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) {
-            fitOpts.paddingTopLeft = panelInsetForOverview(trail);
-        }
         return fitOpts;
     }
 
     /**
-     * Fit trail GeoJSON as large as possible in the map pane (minimal margin; tablet reserves side card).
+     * Fit trail GeoJSON as large as possible (strip card may sit above marker; generous bottom inset).
      */
     function getTrailFitOptions(trail) {
         var mv = trail && trail.locations && trail.locations.mapView;
@@ -867,18 +1123,13 @@
             pad = lo.trailPad;
         }
 
-        var wide = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
-        var opts = { maxZoom: maxZ };
-        if (wide) {
-            opts.paddingTopLeft = panelInsetForTrailFit(trail);
-            opts.paddingBottomRight = L.point(pad, pad);
-        } else {
-            var mb = lo.mobileTrailFitBottomPx;
-            if (mb == null || isNaN(mb) || mb < 80) mb = 180;
-            opts.paddingTopLeft = L.point(pad, pad);
-            opts.paddingBottomRight = L.point(pad, mb);
-        }
-        return opts;
+        var mb = lo.mobileTrailFitBottomPx;
+        if (mb == null || isNaN(mb) || mb < 80) mb = 180;
+        return {
+            maxZoom: maxZ,
+            paddingTopLeft: L.point(pad, pad),
+            paddingBottomRight: L.point(pad, mb)
+        };
     }
 
     /**
@@ -1037,6 +1288,33 @@
 
                     var marker = L.marker(addressLatLng).addTo(map);
 
+                    var DOCK_GAP_PX = 14;
+
+                    function updateCardDockPosition() {
+                        if (!card || !map || !marker) return;
+
+                        function applyDockBottom() {
+                            if (!map || !marker || !card) return;
+                            var pt = map.latLngToContainerPoint(marker.getLatLng());
+                            var sz = map.getSize();
+                            var raw = sz.y - pt.y + DOCK_GAP_PX;
+                            if (!isFinite(raw)) return;
+                            raw = Math.max(48, Math.min(raw, sz.y - 16));
+                            card.style.setProperty('--map-card-dock-bottom', raw + 'px');
+                        }
+
+                        if (card.classList.contains('is-open')) {
+                            applyDockBottom();
+                            requestAnimationFrame(function () {
+                                requestAnimationFrame(function () {
+                                    applyDockBottom();
+                                });
+                            });
+                        } else {
+                            card.style.removeProperty('--map-card-dock-bottom');
+                        }
+                    }
+
                     var mobileModal = document.getElementById('map-place-mobile-modal');
 
                     /** Small Leaflet preview in the mobile detail hero — same trail GeoJSON as the main map (no screenshot). */
@@ -1063,7 +1341,10 @@
                         var el = document.getElementById('map-place-detail-mini-map');
                         if (!wrap || !el) return;
 
-                        if (!geo) {
+                        var wideDetail =
+                            window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
+
+                        if (!geo || wideDetail) {
                             wrap.hidden = true;
                             return;
                         }
@@ -1103,22 +1384,37 @@
                         });
                     }
 
+                    function invalidateMainMapSize() {
+                        requestAnimationFrame(function () {
+                            if (map) {
+                                map.invalidateSize(false);
+                            }
+                        });
+                    }
+
                     function openMobileDetailModal() {
                         if (!card) return;
-                        if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) return;
                         card.classList.add('is-detail-modal-open');
                         document.body.classList.add('map-detail-modal-open');
                         if (mobileModal) mobileModal.setAttribute('aria-hidden', 'false');
                         placeHeading();
                         refreshDetailMiniMapInModal();
+                        invalidateMainMapSize();
+                        updateCardDockPosition();
+                        if (mobileModal && mobileModal._mapHeroGalleryStartAutoplay) {
+                            mobileModal._mapHeroGalleryStartAutoplay();
+                        }
                     }
 
                     function closeMobileDetailModal() {
                         if (!card) return;
+                        stopMapHeroGalleryAutoplay(mobileModal);
                         card.classList.remove('is-detail-modal-open');
                         document.body.classList.remove('map-detail-modal-open');
                         if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
                         placeHeading();
+                        invalidateMainMapSize();
+                        updateCardDockPosition();
                     }
 
                     var miniMapWrap = document.querySelector('.map-place-detail__mini-map-wrap');
@@ -1137,6 +1433,7 @@
 
                     function openCard() {
                         if (!card) return;
+                        stopMapHeroGalleryAutoplay(mobileModal);
                         card.classList.remove('is-detail-modal-open');
                         document.body.classList.remove('map-detail-modal-open');
                         if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
@@ -1144,17 +1441,21 @@
                         card.setAttribute('aria-hidden', 'false');
                         placeHeading();
                         syncTrailVisibility();
+                        updateCardDockPosition();
                     }
 
                     function closeCard() {
                         if (!card) return;
+                        stopMapHeroGalleryAutoplay(mobileModal);
                         card.classList.remove('is-detail-modal-open');
                         document.body.classList.remove('map-detail-modal-open');
                         if (mobileModal) mobileModal.setAttribute('aria-hidden', 'true');
                         card.classList.remove('is-open');
                         card.setAttribute('aria-hidden', 'true');
+                        card.style.removeProperty('--map-card-dock-bottom');
                         placeHeading();
                         syncTrailVisibility();
+                        invalidateMainMapSize();
                     }
 
                     document.querySelectorAll('.js-map-place-close').forEach(function (btn) {
@@ -1176,13 +1477,23 @@
                     var mobileStrip = card.querySelector('.map-place-card__mobile');
                     if (mobileStrip) {
                         mobileStrip.addEventListener('click', function (ev) {
+                            /* Full detail view: tap-to-open only on small screens; strip stays a normal card on wider layouts. */
                             if (window.matchMedia && window.matchMedia('(min-width: 768px)').matches) return;
                             if (ev.target.closest('.js-map-place-close')) return;
+                            if (ev.target.closest('.js-map-place-more-info')) return;
                             if (ev.target.closest('.js-map-directions')) return;
                             if (ev.target.closest('a[href]')) return;
                             openMobileDetailModal();
                         });
                     }
+
+                    document.querySelectorAll('.js-map-place-more-info').forEach(function (btn) {
+                        btn.addEventListener('click', function (ev) {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            openMobileDetailModal();
+                        });
+                    });
 
                     marker.on('click', function (ev) {
                         L.DomEvent.stopPropagation(ev);
@@ -1192,6 +1503,17 @@
                     map.on('click', function () {
                         closeCard();
                     });
+
+                    map.on('moveend', updateCardDockPosition);
+
+                    map.on('zoomend', updateCardDockPosition);
+
+                    function onMapShellResize() {
+                        updateCardDockPosition();
+                        updateStripDetailLine(trail, card);
+                    }
+
+                    window.addEventListener('resize', onMapShellResize);
 
                     applyInitialMapView(map, trail, layer);
                     syncTrailVisibility();
