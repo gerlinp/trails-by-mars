@@ -4464,21 +4464,127 @@ td:last-child {
 
 }
 
-#events {
-    width: 100%;
-
-}
 .events {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.events-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto 0;
+    padding: 0 1.5rem;
+}
+
+.event-card,
+.events-connect {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding: 2rem;
+}
+
+.event-card__title {
+    font-family: var(--font-1);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: var(--vspace-1_25);
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+}
+
+.event-card__flyer {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    margin: 0 0 1rem;
+    object-fit: contain;
+    object-position: center top;
+    background-color: #fafafa;
+    border-radius: 0.5rem;
+}
+
+.event-card__intro {
+    flex: 1;
+    margin-bottom: var(--vspace-1_5);
+}
+
+.event-card__intro p {
+    margin: 0 0 var(--vspace-0_875);
+}
+
+.event-card__intro p:last-child {
+    margin-bottom: 0;
+    color: var(--color-text-light);
+}
+
+.event-card__cta {
+    margin-top: auto;
+}
+
+.btn.btn--mamastay {
+    background: #b86b5e;
+    border-color: #b86b5e;
+    color: #fff;
+}
+
+.btn.btn--mamastay:is(:focus, :hover) {
+    background: #a35a4e;
+    border-color: #a35a4e;
+}
+
+.btn.btn--season {
+    background: #4f5e42;
+    border-color: #4f5e42;
+    color: #fff;
+}
+
+.btn.btn--season:is(:focus, :hover) {
+    background: #3f4b35;
+    border-color: #3f4b35;
+}
+
+.events-connect {
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem 1.5rem 4rem;
+    padding: 1.75rem 2rem;
+    box-sizing: border-box;
+}
+
+.events-connect__note {
+    margin: 0 0 1rem;
+    color: #6b7280;
+}
+
+.events-connect__links {
+    display: flex;
+    gap: 0.5rem;
     justify-content: center;
-}
-#events img {
-    width: 100vh;
-
+    flex-wrap: wrap;
 }
 
+@media screen and (min-width: 768px) {
+    .events-grid {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .event-card__title {
+        font-size: var(--text-lg);
+    }
+}
 
 /* ------------------------------------------------------------------- 
  * responsive:
