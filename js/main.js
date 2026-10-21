@@ -208,6 +208,22 @@
     }; // end ssSwiper
 
 
+   /* protect images
+    * blocks right-click saving and dragging of photos
+    * ------------------------------------------------------ */
+    const ssProtectImages = function() {
+
+        ['contextmenu', 'dragstart'].forEach(function(type) {
+            document.addEventListener(type, function(e) {
+                if (e.target.closest('img, picture, .gslide-image')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+    }; // end ssProtectImages
+
+
    /* alert boxes
     * ------------------------------------------------------ */
     const ssAlertBoxes = function() {
@@ -309,6 +325,7 @@
         ssSwiper();
         ssAlertBoxes();
         ssMoveTo();
+        ssProtectImages();
 
     })();
     
