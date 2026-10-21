@@ -213,9 +213,20 @@
     * ------------------------------------------------------ */
     const ssProtectImages = function() {
 
+        const PHOTO = 'img, picture, .gslide-image';
+
+        // also catch photos covered by another layer (e.g. the intro text over the hero image)
+        const isOverPhoto = function(e) {
+            if (e.target.closest && e.target.closest(PHOTO)) return true;
+            if (e.clientX == null || !document.elementsFromPoint) return false;
+            return document.elementsFromPoint(e.clientX, e.clientY).some(function(el) {
+                return el.matches(PHOTO);
+            });
+        };
+
         ['contextmenu', 'dragstart'].forEach(function(type) {
             document.addEventListener(type, function(e) {
-                if (e.target.closest('img, picture, .gslide-image')) {
+                if (isOverPhoto(e)) {
                     e.preventDefault();
                 }
             });
