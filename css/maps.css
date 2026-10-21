@@ -799,6 +799,17 @@ body.page-maps .leaflet-control-attribution {
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
+    /* Content only scrolls once the sheet is full height; before that a swipe moves the sheet (maps.js). */
+    .explore:not([data-sheet="full"]) .explore-detail__body,
+    .explore:not([data-sheet="full"]) .explore-list__items {
+        overflow-y: hidden;
+    }
+
+    .explore-detail__body,
+    .explore-list__items {
+        overscroll-behavior: contain;
+    }
+
     .explore-sheet.is-dragging {
         transition: none;
     }
