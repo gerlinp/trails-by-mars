@@ -477,6 +477,7 @@
         function renderList() {
             var vis = visibleTrails();
             listEl.textContent = '';
+            listEl.scrollTop = 0;
             vis.forEach(function (t) {
                 listEl.appendChild(listItem(t));
             });
@@ -790,47 +791,114 @@
             applySheet();
         }
 
+        /*
+         * Sheet gestures, the way map apps (Apple Maps, Google Maps) handle them:
+         * - until the sheet is full height, swiping on its content moves the sheet instead of scrolling;
+         * - at full height the content scrolls, and pulling down from the very top collapses the sheet;
+         * - a quick flick snaps in the flick's direction.
+         */
+        var FLICK_PX_PER_MS = 0.5;
         var drag = null;
-        function onGripDown(ev) {
-            if (isWide() || ev.target.closest('button, a, input')) return;
-            drag = { y: ev.clientY, h: sheet.offsetHeight, moved: false, el: ev.currentTarget };
-            drag.el.setPointerCapture(ev.pointerId);
+
+        function sheetStops() {
+            return root.dataset.view === 'list' ? ['peek', 'full'] : ['compact', 'full'];
+        }
+
+        function beginDrag(y) {
+            drag = { y: y, h: sheet.offsetHeight, moved: false, lastY: y, lastT: Date.now(), v: 0 };
             sheet.classList.add('is-dragging');
         }
-        function onGripMove(ev) {
-            if (!drag) return;
-            var dy = drag.y - ev.clientY;
+
+        function moveDrag(y) {
+            var now = Date.now();
+            if (now > drag.lastT) drag.v = (drag.lastY - y) / (now - drag.lastT); /* + = upward */
+            drag.lastY = y;
+            drag.lastT = now;
+            var dy = drag.y - y;
             if (Math.abs(dy) > 5) drag.moved = true;
             if (!drag.moved) return;
-            var max = sheetHeights().full;
-            applySheet(Math.max(96, Math.min(max, drag.h + dy)));
+            applySheet(Math.max(96, Math.min(sheetHeights().full, drag.h + dy)));
+        }
+
+        function endDrag(tapToggles) {
+            var d = drag;
+            drag = null;
+            sheet.classList.remove('is-dragging');
+            var stops = sheetStops();
+            var hs = sheetHeights();
+            if (!d.moved) {
+                if (tapToggles) setSheet(state.sheet === stops[1] ? stops[0] : stops[1]);
+                else applySheet();
+                return;
+            }
+            var cur = sheet.offsetHeight;
+            var startedLow = d.h <= hs[stops[0]] + 4;
+            if (root.dataset.view === 'detail' && (cur < hs.compact * 0.6 || (d.v < -FLICK_PX_PER_MS && startedLow))) {
+                showList();
+                return;
+            }
+            if (d.v > FLICK_PX_PER_MS) {
+                setSheet(stops[1]);
+            } else if (d.v < -FLICK_PX_PER_MS) {
+                setSheet(stops[0]);
+            } else {
+                setSheet(
+                    stops.reduce(function (a, b) {
+                        return Math.abs(hs[a] - cur) <= Math.abs(hs[b] - cur) ? a : b;
+                    })
+                );
+            }
+        }
+
+        /* Grip + list header: drag, or tap to toggle. */
+        function onGripDown(ev) {
+            if (isWide() || ev.target.closest('button, a, input')) return;
+            beginDrag(ev.clientY);
+            ev.currentTarget.setPointerCapture(ev.pointerId);
+        }
+        function onGripMove(ev) {
+            if (drag) moveDrag(ev.clientY);
         }
         function onGripUp() {
-            if (!drag) return;
-            sheet.classList.remove('is-dragging');
-            var stops = root.dataset.view === 'list' ? ['peek', 'full'] : ['compact', 'full'];
-            var hs = sheetHeights();
-            if (!drag.moved) {
-                setSheet(state.sheet === stops[1] ? stops[0] : stops[1]);
-            } else {
-                var cur = sheet.offsetHeight;
-                if (root.dataset.view === 'detail' && cur < hs.compact * 0.6) {
-                    drag = null;
-                    showList();
-                    return;
-                }
-                var best = stops.reduce(function (a, b) {
-                    return Math.abs(hs[a] - cur) <= Math.abs(hs[b] - cur) ? a : b;
-                });
-                setSheet(best);
-            }
-            drag = null;
+            if (drag) endDrag(true);
         }
-        root.querySelectorAll('.js-explore-grip, .js-explore-grip-zone, .explore-detail__heading').forEach(function (zone) {
+        root.querySelectorAll('.js-explore-grip, .js-explore-grip-zone').forEach(function (zone) {
             zone.addEventListener('pointerdown', onGripDown);
             zone.addEventListener('pointermove', onGripMove);
             zone.addEventListener('pointerup', onGripUp);
             zone.addEventListener('pointercancel', onGripUp);
+        });
+
+        /* Scrollable content (detail body, trail list): decides per gesture whether to move the sheet or scroll. */
+        var touchZone = null;
+        function onZoneStart(ev) {
+            if (isWide() || ev.touches.length !== 1) return;
+            touchZone = { el: ev.currentTarget, y: ev.touches[0].clientY, mode: null };
+        }
+        function onZoneMove(ev) {
+            if (!touchZone) return;
+            var y = ev.touches[0].clientY;
+            if (!touchZone.mode) {
+                var dy = touchZone.y - y;
+                if (Math.abs(dy) < 6) return;
+                var pullDownAtTop = dy < 0 && touchZone.el.scrollTop <= 0;
+                touchZone.mode = state.sheet !== 'full' || pullDownAtTop ? 'sheet' : 'scroll';
+                if (touchZone.mode === 'sheet') beginDrag(touchZone.y);
+            }
+            if (touchZone.mode === 'sheet') {
+                ev.preventDefault();
+                moveDrag(y);
+            }
+        }
+        function onZoneEnd() {
+            if (touchZone && touchZone.mode === 'sheet' && drag) endDrag(false);
+            touchZone = null;
+        }
+        [detailBody, listEl].forEach(function (zone) {
+            zone.addEventListener('touchstart', onZoneStart, { passive: true });
+            zone.addEventListener('touchmove', onZoneMove, { passive: false });
+            zone.addEventListener('touchend', onZoneEnd);
+            zone.addEventListener('touchcancel', onZoneEnd);
         });
 
         /* Searching on a phone: open the list so results are visible. */
@@ -859,7 +927,7 @@
 
         renderChips();
         renderList();
-        applySheet();
+        setSheet('peek');
         fitToTrails(trails, false);
 
         var initial = null;
