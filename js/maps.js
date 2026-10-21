@@ -293,6 +293,20 @@
             if (descEl) descEl.textContent = trail.description || '';
         });
 
+        var tags = trail.tags || [];
+        roots.forEach(function (root) {
+            var tagList = root.querySelector('.map-place-card__tags');
+            if (!tagList) return;
+            tagList.textContent = '';
+            tags.forEach(function (tag) {
+                var li = document.createElement('li');
+                li.className = 'map-place-card__tag';
+                li.textContent = tag;
+                tagList.appendChild(li);
+            });
+            tagList.hidden = !tags.length;
+        });
+
         var heroModal = modal && modal.querySelector('.map-place-detail__hero-img');
         if (heroModal && gallery[0]) {
             heroModal.src = gallery[0].src || '';
@@ -965,7 +979,7 @@
      * Single #map-place-trail-heading moves between mobile strip, full-page mobile modal, and tablet panel.
      */
     function initTrailHeadingPlacement(card, trailCount) {
-        if (trailCount !== 1) return function () {};
+        if (trailCount < 1) return function () {};
         var heading = document.getElementById('map-place-trail-heading');
         var am = document.getElementById('map-place-heading-anchor-mobile');
         var amModal = document.getElementById('map-place-heading-anchor-mobile-modal');
@@ -995,11 +1009,12 @@
         return place;
     }
 
-    function wireShare(trail) {
+    /** getTrail returns the trail currently shown in the card. */
+    function wireShare(getTrail) {
         document.querySelectorAll('.js-map-place-share').forEach(function (shareBtn) {
             shareBtn.addEventListener('click', function () {
                 var payload = {
-                    title: trailDisplayName(trail) || document.title,
+                    title: trailDisplayName(getTrail()) || document.title,
                     url: window.location.href
                 };
                 if (navigator.share) {
@@ -1195,6 +1210,74 @@
         return null;
     }
 
+    /**
+     * Basemap: OpenFreeMap "liberty" vector style (OSM colors, no API key) with POI icon layers removed —
+     * the map is only for finding parks, so shop/landmark icons are noise.
+     * Falls back to the standard OSM raster tiles if MapLibre/WebGL isn't available.
+     */
+    var BASEMAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+    var HIDDEN_BASEMAP_LAYERS = /^(poi_|road_one_way_arrow|building-3d)/;
+    var basemapStylePromise = null;
+
+    function loadBasemapStyle() {
+        if (!basemapStylePromise) {
+            basemapStylePromise = fetch(BASEMAP_STYLE_URL)
+                .then(function (res) {
+                    return res.ok ? res.json() : Promise.reject(new Error('basemap style'));
+                })
+                .then(function (style) {
+                    style.layers = style.layers.filter(function (lyr) {
+                        return !HIDDEN_BASEMAP_LAYERS.test(lyr.id);
+                    });
+                    return style;
+                });
+        }
+        return basemapStylePromise;
+    }
+
+    function addOsmRasterTiles(map) {
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: ''
+        }).addTo(map);
+    }
+
+    function hasWebGl() {
+        try {
+            var c = document.createElement('canvas');
+            return !!(c.getContext('webgl2') || c.getContext('webgl'));
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function addBaseTiles(map) {
+        if (typeof L.maplibreGL !== 'function' || typeof maplibregl === 'undefined' || !hasWebGl()) {
+            addOsmRasterTiles(map);
+            return;
+        }
+        loadBasemapStyle()
+            .then(function (style) {
+                L.maplibreGL({ style: style, attributionControl: false }).addTo(map);
+            })
+            .catch(function () {
+                addOsmRasterTiles(map);
+            });
+    }
+
+    /** Map pin for a park: addressMarker → trail.marker → park bounds center. */
+    function getPinLatLng(trail) {
+        var loc = (trail && trail.locations) || {};
+        if (loc.addressMarker && loc.addressMarker.lat != null && loc.addressMarker.lng != null) {
+            return L.latLng(loc.addressMarker.lat, loc.addressMarker.lng);
+        }
+        if (trail.marker && trail.marker.lat != null && trail.marker.lng != null) {
+            return L.latLng(trail.marker.lat, trail.marker.lng);
+        }
+        var pb = getParkViewBounds(trail);
+        return pb && pb.isValid() ? pb.getCenter() : null;
+    }
+
     var qsTrail =
         typeof URLSearchParams !== 'undefined'
             ? new URLSearchParams(window.location.search).get('trail')
@@ -1209,19 +1292,16 @@
             if (!trail) {
                 return;
             }
+            var pinnedTrails = (config.trails || []).filter(function (t) {
+                return !!getPinLatLng(t);
+            });
+            var focusedFromQuery = !!(qsTrail && trail.id === qsTrail);
 
-            resolveTrailGeo(trail)
-                .catch(function () {
-                    return null;
-                })
-                .then(function (geo) {
+            (function () {
+                    var geo = null;
                     var layer = null;
-                    var lineStyle = mergeStyle(trail.style);
-                    if (geo) {
-                        layer = geoJsonToDoubleLineLayer(geo, lineStyle, 5);
-                    }
 
-                    var latlng = getMarkerLatLng(trail, layer);
+                    var latlng = getMarkerLatLng(trail, null) || getPinLatLng(trail);
                     if (!latlng) {
                         return;
                     }
@@ -1233,10 +1313,7 @@
 
                     L.control.zoom({ position: 'topright' }).addTo(map);
 
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: ''
-                    }).addTo(map);
+                    addBaseTiles(map);
 
                     var card = document.getElementById('map-place-card');
 
@@ -1247,21 +1324,10 @@
                             : trail.directionsDestination;
                     var mapShell = card.closest('.map-shell');
                     applyDirectionsAll(mapShell || card, directionsTarget);
-                    wireShare(trail);
+                    wireShare(function () {
+                        return trail;
+                    });
                     var placeHeading = initTrailHeadingPlacement(card, config.trails ? config.trails.length : 0);
-
-                    var trailCenterLatLng = latlng;
-
-                    var locForPin = trail.locations || {};
-                    /** Visible marker only — postal/directions point (same idea as card). Fallbacks keep a pin if coords omitted. */
-                    var addressLatLng =
-                        locForPin.addressMarker &&
-                        locForPin.addressMarker.lat != null &&
-                        locForPin.addressMarker.lng != null
-                            ? L.latLng(locForPin.addressMarker.lat, locForPin.addressMarker.lng)
-                            : trail.marker && trail.marker.lat != null && trail.marker.lng != null
-                              ? L.latLng(trail.marker.lat, trail.marker.lng)
-                              : trailCenterLatLng;
 
                     var connectorLayer = null;
 
@@ -1286,7 +1352,13 @@
                         }
                     }
 
-                    var marker = L.marker(addressLatLng).addTo(map);
+                    /** One pin per park; `marker` is the pin of the park shown in the card. */
+                    var markersById = {};
+                    pinnedTrails.forEach(function (t) {
+                        var name = trailDisplayName(t);
+                        markersById[t.id] = L.marker(getPinLatLng(t), { title: name, alt: name }).addTo(map);
+                    });
+                    var marker = markersById[trail.id] || null;
 
                     var DOCK_GAP_PX = 14;
 
@@ -1371,10 +1443,7 @@
                                 keyboard: false,
                                 tap: false
                             });
-                            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                maxZoom: 19,
-                                attribution: ''
-                            }).addTo(detailMiniMap);
+                            addBaseTiles(detailMiniMap);
                             detailMiniTrailLayer = geoJsonToDoubleLineLayer(
                                 geo,
                                 mergeStyle(trail.style),
@@ -1426,7 +1495,7 @@
                     }
 
                     var miniMapWrap = document.querySelector('.map-place-detail__mini-map-wrap');
-                    if (miniMapWrap && geo && !miniMapWrap.dataset.backToMapWired) {
+                    if (miniMapWrap && !miniMapWrap.dataset.backToMapWired) {
                         miniMapWrap.dataset.backToMapWired = '1';
                         miniMapWrap.addEventListener(
                             'click',
@@ -1503,9 +1572,69 @@
                         });
                     });
 
-                    marker.on('click', function (ev) {
-                        L.DomEvent.stopPropagation(ev);
-                        openCard();
+                    var trailLoadToken = 0;
+
+                    /** Load the selected park's trail line + access route; stale loads are dropped. */
+                    function loadTrailLayers() {
+                        var token = ++trailLoadToken;
+                        var t = trail;
+                        resolveTrailGeo(t)
+                            .catch(function () {
+                                return null;
+                            })
+                            .then(function (g) {
+                                if (token !== trailLoadToken) return;
+                                geo = g;
+                                layer = g ? geoJsonToDoubleLineLayer(g, mergeStyle(t.style), 5) : null;
+                                syncTrailVisibility();
+                                if (card.classList.contains('is-detail-modal-open')) {
+                                    refreshDetailMiniMapInModal();
+                                }
+                            });
+                        resolveAccessRouteLayer(t).then(function (lyr) {
+                            if (token !== trailLoadToken) return;
+                            connectorLayer = lyr;
+                            syncTrailVisibility();
+                        });
+                    }
+
+                    function selectTrail(t) {
+                        if (!t || t === trail) return;
+                        if (layer && map.hasLayer(layer)) map.removeLayer(layer);
+                        if (connectorLayer && map.hasLayer(connectorLayer)) map.removeLayer(connectorLayer);
+                        if (detailMiniMap) {
+                            detailMiniMap.remove();
+                            detailMiniMap = null;
+                            detailMiniTrailLayer = null;
+                        }
+                        geo = null;
+                        layer = null;
+                        connectorLayer = null;
+
+                        trail = t;
+                        marker = markersById[t.id] || null;
+                        populateCard(trail, card);
+                        applyDirectionsAll(
+                            mapShell || card,
+                            trail.locations && trail.locations.directions
+                                ? trail.locations.directions
+                                : trail.directionsDestination
+                        );
+                        if (window.history && window.history.replaceState) {
+                            window.history.replaceState(null, '', '?trail=' + encodeURIComponent(t.id));
+                        }
+                        loadTrailLayers();
+                    }
+
+                    pinnedTrails.forEach(function (t) {
+                        markersById[t.id].on('click', function (ev) {
+                            L.DomEvent.stopPropagation(ev);
+                            selectTrail(t);
+                            openCard();
+                            if (map.getZoom() < 14) {
+                                fitParkView(map, t, true);
+                            }
+                        });
                     });
 
                     map.on('click', function () {
@@ -1523,14 +1652,23 @@
 
                     window.addEventListener('resize', onMapShellResize);
 
-                    applyInitialMapView(map, trail, layer);
+                    if (focusedFromQuery || pinnedTrails.length < 2) {
+                        applyInitialMapView(map, trail, layer);
+                    } else {
+                        /* Overview: frame every park pin. */
+                        var allPins = L.latLngBounds(
+                            pinnedTrails.map(function (t) {
+                                return getPinLatLng(t);
+                            })
+                        );
+                        map.fitBounds(allPins, { padding: [48, 48], maxZoom: 13 });
+                    }
                     syncTrailVisibility();
-
-                    resolveAccessRouteLayer(trail).then(function (lyr) {
-                        connectorLayer = lyr;
-                        syncTrailVisibility();
-                    });
-                });
+                    loadTrailLayers();
+                    if (focusedFromQuery) {
+                        openCard();
+                    }
+            })();
         })
         .catch(function () {});
 })();

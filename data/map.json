@@ -2,6 +2,215 @@
   "defaultTrailId": "pond-meadow-paved",
   "trails": [
     {
+      "id": "powers-farm",
+      "title": "Powers Farm Community Park",
+      "locationLabel": "Powers Farm Community Park",
+      "breadcrumbs": "United States / Massachusetts / Powers Farm Community Park",
+      "difficultyLabel": "Easy",
+      "locations": {
+        "directions": "Powers Farm Community Park, 592 N Main Street, Randolph, MA 02368",
+        "postalAddress": "592 N Main Street, Randolph, MA 02368",
+        "addressMarker": {
+          "lat": 42.1756771,
+          "lng": -71.0515753
+        },
+        "mapView": {
+          "bounds": {
+            "southWest": {
+              "lat": 42.1721,
+              "lng": -71.0566
+            },
+            "northEast": {
+              "lat": 42.1793,
+              "lng": -71.0477
+            }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "thumb": {
+        "src": "images/folio/gallery/pf-01.jpg",
+        "alt": "Powers Farm Community Park"
+      },
+      "gallery": [
+        {
+          "src": "images/folio/gallery/pf-01.jpg",
+          "alt": "Powers Farm Community Park"
+        },
+        {
+          "src": "images/folio/gallery/pf-02.jpg",
+          "alt": "Birdhouse at Powers Farm Community Park"
+        }
+      ],
+      "description": "A small, peaceful community park with a pond, open fields, trails, and a mix of natural and developed spaces. A nice option for a slower outdoor outing, especially for families and people looking for a local place to get outside without committing to a long hike.",
+      "tags": [
+        "Stroller-friendly",
+        "Kid-friendly",
+        "Playground",
+        "Pond",
+        "Open space",
+        "Restrooms",
+        "Seating",
+        "Local park",
+        "Family-friendly",
+        "Easy walk"
+      ],
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      }
+    },
+    {
+      "id": "franklin-park",
+      "title": "Franklin Park",
+      "locationLabel": "Franklin Park",
+      "breadcrumbs": "United States / Massachusetts / Franklin Park",
+      "locations": {
+        "directions": "Franklin Park, 1 Franklin Park Road, Boston, MA 02121",
+        "postalAddress": "1 Franklin Park Road, Boston, MA 02121",
+        "addressMarker": {
+          "lat": 42.3031715,
+          "lng": -71.0946069
+        },
+        "mapView": {
+          "bounds": {
+            "southWest": {
+              "lat": 42.2912,
+              "lng": -71.1088
+            },
+            "northEast": {
+              "lat": 42.3152,
+              "lng": -71.083
+            }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "thumb": {
+        "src": "images/folio/gallery/fp-01.jpg",
+        "alt": "Franklin Park bridge"
+      },
+      "gallery": [
+        {
+          "src": "images/folio/gallery/fp-01.jpg",
+          "alt": "Franklin Park bridge"
+        },
+        {
+          "src": "images/franklinpark.jpeg",
+          "alt": "Franklin Park"
+        }
+      ],
+      "description": "A large urban park with plenty of room to explore, wooded areas, open spaces, scenic views, and multiple places to walk.",
+      "tags": [
+        "Kid-friendly",
+        "Playground",
+        "Views",
+        "Woods",
+        "Trails",
+        "Walking",
+        "Biking",
+        "Picnic",
+        "Zoo",
+        "Large park",
+        "Urban nature"
+      ],
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      }
+    },
+    {
+      "id": "pope-john-paul-ii-park",
+      "title": "Pope John Paul II Park Reservation",
+      "locationLabel": "Pope John Paul II Park Reservation",
+      "breadcrumbs": "United States / Massachusetts / Pope John Paul II Park Reservation",
+      "difficultyLabel": "Easy",
+      "locations": {
+        "directions": "Pope John Paul II Park Reservation, Hallet Street, Boston, MA 02124",
+        "postalAddress": "Hallet Street, Boston, MA 02124",
+        "addressMarker": {
+          "lat": 42.2809963,
+          "lng": -71.0426562
+        },
+        "mapView": {
+          "bounds": {
+            "southWest": {
+              "lat": 42.275,
+              "lng": -71.0495
+            },
+            "northEast": {
+              "lat": 42.287,
+              "lng": -71.0385
+            }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "thumb": {
+        "src": "images/folio/gallery/pjpp-01.jpg",
+        "alt": "Pope John Paul II Park Reservation"
+      },
+      "gallery": [
+        {
+          "src": "images/folio/gallery/pjpp-01.jpg",
+          "alt": "Pope John Paul II Park Reservation"
+        },
+        {
+          "src": "images/folio/gallery/pjpp-02.jpg",
+          "alt": "Pope John Paul II Park highway exit"
+        }
+      ],
+      "description": "A waterfront park with wide open spaces, trails, views, and opportunities to see birds and wildlife. It has a relaxed feel and works well for an easy outdoor walk, especially when you want water views and room to move around.",
+      "tags": [
+        "Stroller-friendly",
+        "Waterfront",
+        "Views",
+        "Kid-friendly",
+        "Wildlife",
+        "Birding",
+        "Open space",
+        "Picnic",
+        "Easy walk"
+      ],
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      }
+    },
+    {
       "id": "pond-meadow-paved",
       "title": "Pond Meadow Park",
       "locationLabel": "Pond Meadow Park",
@@ -9,7 +218,7 @@
       "difficultyLabel": "Easy",
       "locations": {
         "directions": "Pond Meadow Park, 470 Liberty St, Braintree, MA 02184, USA",
-        "postalAddress": "470 Liberty St, Braintree, MA 02184",
+        "postalAddress": "470 Liberty Street, Braintree, MA 02184",
         "addressMarker": {
           "lat": 42.2046514,
           "lng": -70.9824074
@@ -17,8 +226,14 @@
         "accessRouteGeojsonUrl": "data/trails/pond-meadow-paved-access.geojson",
         "mapView": {
           "bounds": {
-            "southWest": { "lat": 42.2007, "lng": -70.9846 },
-            "northEast": { "lat": 42.2102, "lng": -70.9709 }
+            "southWest": {
+              "lat": 42.2007,
+              "lng": -70.9846
+            },
+            "northEast": {
+              "lat": 42.2102,
+              "lng": -70.9709
+            }
           },
           "layout": {
             "panelReservePx": 400,
@@ -60,7 +275,7 @@
         "estimatedTime": "40–60 min",
         "routeType": "Loop"
       },
-      "description": "This is a beautiful paved trail around the pond—easy rolling terrain with views of the water and shaded woodland stretches.",
+      "description": "A large open park centered around a pond with trails and natural scenery. It offers a nice mix of woods, water, and open space and can be a good place for families or anyone looking for a longer outdoor walk.",
       "detail": "1.9 mi · Est. 40 min · Loop",
       "style": {
         "color": "#5CE65C",
@@ -68,7 +283,73 @@
         "opacity": 0.74
       },
       "gpxUrl": "data/trails/Pond Meadow Park Loop.gpx",
-      "geojsonUrl": "data/trails/pond-meadow-paved.geojson"
+      "geojsonUrl": "data/trails/pond-meadow-paved.geojson",
+      "tags": [
+        "Pond",
+        "Trails",
+        "Woods",
+        "Nature",
+        "Kid-friendly",
+        "Family-friendly",
+        "Views",
+        "Wildlife",
+        "Walking"
+      ]
+    },
+    {
+      "id": "houghtons-pond",
+      "title": "Houghton's Pond Recreation Area",
+      "locationLabel": "Houghton's Pond Recreation Area",
+      "breadcrumbs": "United States / Massachusetts / Houghton's Pond Recreation Area",
+      "locations": {
+        "directions": "Houghton's Pond Recreation Area, Milton, MA 02186",
+        "postalAddress": "Houghton's Pond Recreation Area, Milton, MA 02186",
+        "addressMarker": {
+          "lat": 42.2072841,
+          "lng": -71.0959728
+        },
+        "mapView": {
+          "bounds": {
+            "southWest": {
+              "lat": 42.2039,
+              "lng": -71.1012
+            },
+            "northEast": {
+              "lat": 42.2106,
+              "lng": -71.0899
+            }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "description": "A beautiful Blue Hills destination with water, wooded trails, picnic areas, and plenty of space to spend time outdoors. The area offers a mix of easier walking and more uneven terrain, so choosing the right route is important if you are visiting with a stroller or young children. This is a great place for a nature-focused outing with a little more variety in the terrain.",
+      "tags": [
+        "Pond",
+        "Views",
+        "Woods",
+        "Picnic",
+        "Wildlife",
+        "Kid-friendly",
+        "Stroller-friendly sections",
+        "Hiking",
+        "Nature",
+        "Parking"
+      ],
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      }
     }
   ]
 }

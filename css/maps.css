@@ -1722,6 +1722,58 @@ body.page-maps .map-place-detail__description {
 
 
 
+body.page-maps .map-place-card__tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.4rem;
+
+    margin: 0 0 1.25rem;
+
+    padding: 0;
+
+    list-style: none;
+
+}
+
+
+
+body.page-maps .map-place-card__difficulty-badge[hidden],
+
+body.page-maps .map-place-card__meta-sep[hidden],
+
+body.page-maps .map-place-detail__difficulty-wrap[hidden],
+
+body.page-maps .map-place-card__tags[hidden] {
+
+    display: none;
+
+}
+
+
+
+body.page-maps .map-place-card__tag {
+
+    margin: 0;
+
+    padding: 0.25rem 0.65rem;
+
+    border: 1px solid currentColor;
+
+    border-radius: 999px;
+
+    font-size: var(--text-xs, 0.75rem);
+
+    line-height: 1.4;
+
+    opacity: 0.85;
+
+}
+
+
+
 body.page-maps .map-place-detail__cta-directions {
 
     display: flex;

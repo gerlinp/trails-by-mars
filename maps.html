@@ -37,6 +37,7 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
+        <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
     </head>
 
 <body id="top" class="page-maps">
@@ -84,7 +85,7 @@
             <div class="map-shell__stage">
                 <div id="map"></div>
                 <p class="map-osm-credit">
-                    Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                    Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a>
                 </p>
             </div>
             <aside class="map-place-card" id="map-place-card" aria-hidden="true">
@@ -186,6 +187,7 @@
                             </dl>
 
                             <p class="map-place-card__description"></p>
+                            <ul class="map-place-card__tags" aria-label="Trail features" hidden></ul>
                         </div>
                     </div>
                 </div>
@@ -290,6 +292,7 @@
                         </div>
 
                         <p class="map-place-detail__description map-place-card__description"></p>
+                        <ul class="map-place-card__tags" aria-label="Trail features" hidden></ul>
 
                         <a
                             class="map-place-detail__cta-directions js-map-directions"
@@ -364,7 +367,9 @@
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>   
+    crossorigin=""></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
     <script src="js/maps.js"></script>
