@@ -4472,6 +4472,18 @@ td:last-child {
     align-items: center;
 }
 
+.events-upcoming {
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    max-width: 1200px;
+    font-family: "Fraunces", var(--font-2);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 3.2rem;
+    text-align: center;
+    color: #4f5e42;
+}
+
 .events-grid {
     display: flex;
     flex-direction: column;
@@ -4590,6 +4602,9 @@ td:last-child {
 }
 
 .event-card--season {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
     font-family: "Jost", var(--font-1);
 }
 
@@ -4599,6 +4614,9 @@ td:last-child {
 }
 
 .event-card--season .event-card__intro p {
+    max-width: 66ch;
+    margin-left: auto;
+    margin-right: auto;
     font-size: 1.8rem;
     color: #4a4a4a;
 }
@@ -4734,9 +4752,9 @@ td:last-child {
 }
 
 .events-connect {
-    width: 100%;
-    max-width: 1200px;
-    margin: 2rem 1.5rem 4rem;
+    width: calc(100% - 3rem);
+    max-width: 720px;
+    margin: 2rem auto 4rem;
     padding: 1.75rem 2rem;
     box-sizing: border-box;
 }
@@ -5025,5 +5043,94 @@ td:last-child {
 @media screen and (max-width: 400px) {
     .ss-go-top {
         right: -2rem;
+    }
+}
+
+
+/* ===================================================================
+ * # IMAGE PROTECTION
+ * stop dragging photos out and the iOS long-press save menu
+ * ------------------------------------------------------------------- */
+img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+
+/* ===================================================================
+ * # TRAILS (home page feature card linking to maps.html)
+ *
+ *
+ * ------------------------------------------------------------------- */
+.s-trails {
+    padding-top   : var(--vspace-5_5);
+    padding-bottom: var(--vspace-3);
+}
+
+.trails-feature__media {
+    display              : grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows   : minmax(0, 1fr);
+    gap                  : 0.8rem;
+    aspect-ratio         : 1410 / 640;
+    overflow             : hidden;
+}
+
+.trails-feature__media img,
+.trails-feature__map {
+    display      : block;
+    width        : 100%;
+    height       : 100%;
+    min-height   : 0;
+    margin       : 0;
+    object-fit   : cover;
+    border-radius: 0.5rem;
+}
+
+.trails-feature__map {
+    position: relative;
+    overflow: hidden;
+}
+
+.trails-feature__map img {
+    border-radius: 0;
+    transition   : transform 0.4s ease;
+}
+
+.trails-feature__map:hover img,
+.trails-feature__map:focus-visible img {
+    transform: scale(1.03);
+}
+
+/* Required map credit, tucked into the map's corner. */
+.trails-feature__credit {
+    position     : absolute;
+    right        : 0;
+    bottom       : 0;
+    max-width    : 100%;
+    padding      : 0.3rem 0.6rem;
+    color        : #3a3a3a;
+    text-shadow  : 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff;
+    font-family  : var(--font-1);
+    font-size    : 1rem;
+    line-height  : 1.3;
+    text-align   : right;
+    box-sizing   : border-box;
+}
+
+.trails-feature__media {
+    margin-bottom: 1.25rem;
+}
+
+@media screen and (max-width: 600px) {
+    .trails-feature__media {
+        aspect-ratio: 4 / 3;
+        gap         : 0.6rem;
+    }
+
+    .trails-feature__credit {
+        padding  : 0.1rem 0.4rem;
+        font-size: 0.8rem;
     }
 }

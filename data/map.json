@@ -2,80 +2,11 @@
   "defaultTrailId": "pond-meadow-paved",
   "trails": [
     {
-      "id": "powers-farm",
-      "title": "Powers Farm Community Park",
-      "locationLabel": "Powers Farm Community Park",
-      "breadcrumbs": "United States / Massachusetts / Powers Farm Community Park",
-      "difficultyLabel": "Easy",
-      "locations": {
-        "directions": "Powers Farm Community Park, 592 N Main Street, Randolph, MA 02368",
-        "postalAddress": "592 N Main Street, Randolph, MA 02368",
-        "addressMarker": {
-          "lat": 42.1756771,
-          "lng": -71.0515753
-        },
-        "mapView": {
-          "bounds": {
-            "southWest": {
-              "lat": 42.1721,
-              "lng": -71.0566
-            },
-            "northEast": {
-              "lat": 42.1793,
-              "lng": -71.0477
-            }
-          },
-          "layout": {
-            "panelReservePx": 400,
-            "panelReserveVwPct": 0.05,
-            "panelReserveTopPx": 80,
-            "trailFitPanelTopPx": 56,
-            "overviewEdgePaddingPx": 48,
-            "trailEdgePaddingPx": 8
-          },
-          "maxZoom": 17,
-          "markerClickMaxZoom": 19,
-          "markerClickZoom": 17
-        }
-      },
-      "thumb": {
-        "src": "images/folio/gallery/pf-01.jpg",
-        "alt": "Powers Farm Community Park"
-      },
-      "gallery": [
-        {
-          "src": "images/folio/gallery/pf-01.jpg",
-          "alt": "Powers Farm Community Park"
-        },
-        {
-          "src": "images/folio/gallery/pf-02.jpg",
-          "alt": "Birdhouse at Powers Farm Community Park"
-        }
-      ],
-      "description": "A small, peaceful community park with a pond, open fields, trails, and a mix of natural and developed spaces. A nice option for a slower outdoor outing, especially for families and people looking for a local place to get outside without committing to a long hike.",
-      "tags": [
-        "Stroller-friendly",
-        "Kid-friendly",
-        "Playground",
-        "Pond",
-        "Open space",
-        "Restrooms",
-        "Seating",
-        "Local park",
-        "Family-friendly",
-        "Easy walk"
-      ],
-      "style": {
-        "color": "#5CE65C",
-        "weight": 6,
-        "opacity": 0.74
-      }
-    },
-    {
       "id": "franklin-park",
       "title": "Franklin Park",
       "locationLabel": "Franklin Park",
-      "breadcrumbs": "United States / Massachusetts / Franklin Park",
+      "town": "Boston, MA",
+      "breadcrumbs": "United States / Massachusetts / Boston",
       "locations": {
         "directions": "Franklin Park, 1 Franklin Park Road, Boston, MA 02121",
         "postalAddress": "1 Franklin Park Road, Boston, MA 02121",
@@ -145,7 +76,8 @@
       "id": "pope-john-paul-ii-park",
       "title": "Pope John Paul II Park Reservation",
       "locationLabel": "Pope John Paul II Park Reservation",
-      "breadcrumbs": "United States / Massachusetts / Pope John Paul II Park Reservation",
+      "town": "Boston, MA",
+      "breadcrumbs": "United States / Massachusetts / Boston",
       "difficultyLabel": "Easy",
       "locations": {
         "directions": "Pope John Paul II Park Reservation, Hallet Street, Boston, MA 02124",
@@ -211,10 +143,67 @@
       }
     },
     {
+      "id": "houghtons-pond",
+      "title": "Houghton's Pond Recreation Area",
+      "locationLabel": "Houghton's Pond Recreation Area",
+      "town": "Milton, MA",
+      "breadcrumbs": "United States / Massachusetts / Milton",
+      "locations": {
+        "directions": "Houghton's Pond Recreation Area, Milton, MA 02186",
+        "postalAddress": "Houghton's Pond Recreation Area, Milton, MA 02186",
+        "addressMarker": {
+          "lat": 42.2072841,
+          "lng": -71.0959728
+        },
+        "mapView": {
+          "bounds": {
+            "southWest": {
+              "lat": 42.2039,
+              "lng": -71.1012
+            },
+            "northEast": {
+              "lat": 42.2106,
+              "lng": -71.0899
+            }
+          },
+          "layout": {
+            "panelReservePx": 400,
+            "panelReserveVwPct": 0.05,
+            "panelReserveTopPx": 80,
+            "trailFitPanelTopPx": 56,
+            "overviewEdgePaddingPx": 48,
+            "trailEdgePaddingPx": 8
+          },
+          "maxZoom": 17,
+          "markerClickMaxZoom": 19,
+          "markerClickZoom": 17
+        }
+      },
+      "description": "A beautiful Blue Hills destination with water, wooded trails, picnic areas, and plenty of space to spend time outdoors. The area offers a mix of easier walking and more uneven terrain, so choosing the right route is important if you are visiting with a stroller or young children. This is a great place for a nature-focused outing with a little more variety in the terrain.",
+      "tags": [
+        "Pond",
+        "Views",
+        "Woods",
+        "Picnic",
+        "Wildlife",
+        "Kid-friendly",
+        "Stroller-friendly sections",
+        "Hiking",
+        "Nature",
+        "Parking"
+      ],
+      "style": {
+        "color": "#5CE65C",
+        "weight": 6,
+        "opacity": 0.74
+      }
+    },
+    {
       "id": "pond-meadow-paved",
       "title": "Pond Meadow Park",
       "locationLabel": "Pond Meadow Park",
-      "breadcrumbs": "United States / Massachusetts / Pond Meadow Park",
+      "town": "Braintree, MA",
+      "breadcrumbs": "United States / Massachusetts / Braintree",
       "difficultyLabel": "Easy",
       "locations": {
         "directions": "Pond Meadow Park, 470 Liberty St, Braintree, MA 02184, USA",
@@ -297,26 +286,28 @@
       ]
     },
     {
-      "id": "houghtons-pond",
-      "title": "Houghton's Pond Recreation Area",
-      "locationLabel": "Houghton's Pond Recreation Area",
-      "breadcrumbs": "United States / Massachusetts / Houghton's Pond Recreation Area",
+      "id": "powers-farm",
+      "title": "Powers Farm Community Park",
+      "locationLabel": "Powers Farm Community Park",
+      "town": "Randolph, MA",
+      "breadcrumbs": "United States / Massachusetts / Randolph",
+      "difficultyLabel": "Easy",
       "locations": {
-        "directions": "Houghton's Pond Recreation Area, Milton, MA 02186",
-        "postalAddress": "Houghton's Pond Recreation Area, Milton, MA 02186",
+        "directions": "Powers Farm Community Park, 592 N Main Street, Randolph, MA 02368",
+        "postalAddress": "592 N Main Street, Randolph, MA 02368",
         "addressMarker": {
-          "lat": 42.2072841,
-          "lng": -71.0959728
+          "lat": 42.1756771,
+          "lng": -71.0515753
         },
         "mapView": {
           "bounds": {
             "southWest": {
-              "lat": 42.2039,
-              "lng": -71.1012
+              "lat": 42.1721,
+              "lng": -71.0566
             },
             "northEast": {
-              "lat": 42.2106,
-              "lng": -71.0899
+              "lat": 42.1793,
+              "lng": -71.0477
             }
           },
           "layout": {
@@ -332,18 +323,32 @@
           "markerClickZoom": 17
         }
       },
-      "description": "A beautiful Blue Hills destination with water, wooded trails, picnic areas, and plenty of space to spend time outdoors. The area offers a mix of easier walking and more uneven terrain, so choosing the right route is important if you are visiting with a stroller or young children. This is a great place for a nature-focused outing with a little more variety in the terrain.",
+      "thumb": {
+        "src": "images/folio/gallery/pf-01.jpg",
+        "alt": "Powers Farm Community Park"
+      },
+      "gallery": [
+        {
+          "src": "images/folio/gallery/pf-01.jpg",
+          "alt": "Powers Farm Community Park"
+        },
+        {
+          "src": "images/folio/gallery/pf-02.jpg",
+          "alt": "Birdhouse at Powers Farm Community Park"
+        }
+      ],
+      "description": "A small, peaceful community park with a pond, open fields, trails, and a mix of natural and developed spaces. A nice option for a slower outdoor outing, especially for families and people looking for a local place to get outside without committing to a long hike.",
       "tags": [
-        "Pond",
-        "Views",
-        "Woods",
-        "Picnic",
-        "Wildlife",
+        "Stroller-friendly",
         "Kid-friendly",
-        "Stroller-friendly sections",
-        "Hiking",
-        "Nature",
-        "Parking"
+        "Playground",
+        "Pond",
+        "Open space",
+        "Restrooms",
+        "Seating",
+        "Local park",
+        "Family-friendly",
+        "Easy walk"
       ],
       "style": {
         "color": "#5CE65C",

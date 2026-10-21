@@ -3,11 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Trail Blazing Mom | Family-Friendly Stroller Paths in Boston</title>
-        <meta name="description" content="Discover the best family-friendly stroller paths in Boston with Trail Blazing Mom. Explore scenic trails perfect for moms and kids, featuring easy routes and beautiful views.">
+        <title>Our Go-To Trails | Trail Blazing Mom</title>
+        <meta name="description" content="The trails Trail Blazing Mom walks again and again and recommends around Boston: family-friendly parks and stroller-friendly paths, with photos, what each is good for, and directions.">
         <meta name="keywords" content="family-friendly paths, stroller trails, Boston, moms, outdoor activities, stroller-friendly trails, nature walks">
-        <meta property="og:title" content="Family-Friendly Stroller Paths in Boston | Trail Blazing Mom">
-        <meta property="og:description" content="Explore the best stroller-friendly trails in Boston for moms and families.">
+        <meta property="og:title" content="Our Go-To Trails | Trail Blazing Mom">
+        <meta property="og:description" content="The family-friendly trails our group walks and recommends around Boston.">
         <meta property="og:image" content="images/folio/gallery/pf-01.jpg">
         <meta property="og:url" content="https://trailblazingmom.com">
         <meta property="og:type" content="website">
@@ -30,8 +30,8 @@
         }
         </script>
         <link rel="stylesheet" href="css/vendor.css">
-        <link rel="stylesheet" href="css/styles.css">
-        <link rel="stylesheet" href="css/maps.css">
+        <link rel="stylesheet" href="css/styles.css?v=2026-10-21-maps">
+        <link rel="stylesheet" href="css/maps.css?v=2026-10-21-maps">
         <link rel="icon" type="image/png" sizes="32x32" href="images/momicon.png">
         <link rel="icon" type="image/png" sizes="16x16" href="images/momicon.png">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -63,11 +63,12 @@
 
                 <nav class="s-header__nav">    
                     <ul class="s-header__menu-links">
-                        <li class="current"><a href="index.html#intro">Home</a></li>
+                        <li><a href="index.html#intro">Home</a></li>
                         <li><a href="index.html#blog">Blog</a></li>
                         <li><a href="index.html#about">About</a></li>
                         <li><a href="index.html#works">Gallery</a></li>
                         <li><a href="index.html#events">Events</a></li>
+                        <li class="current"><a href="maps.html">Trails</a></li>
                         <li><a href="index.html#guide">Guide</a></li>
                         <li><a href="index.html#footer">Contact</a></li>
                     </ul> <!-- s-header__menu-links -->    
@@ -81,268 +82,134 @@
 
 
 
-        <div class="map-shell">
-            <div class="map-shell__stage">
-                <div id="map"></div>
-                <p class="map-osm-credit">
-                    Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a>
+        <main class="explore" id="explore" data-view="list">
+
+            <!-- Map (right on desktop, full-bleed behind the sheet on phones) -->
+            <div class="explore-map">
+                <div id="map" aria-label="Map of our go-to trails"></div>
+
+                <p class="explore-map__hint">
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.5" stroke="currentColor" stroke-width="2"/></svg>
+                    Click a pin to see the trail
+                </p>
+
+                <button type="button" class="explore-map__back js-explore-back">
+                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    All trails
+                </button>
+
+                <div class="explore-map__controls">
+                    <div class="explore-map__zoom">
+                        <button type="button" class="explore-map__ctrl js-explore-zoom-in" aria-label="Zoom in">
+                            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </button>
+                        <button type="button" class="explore-map__ctrl js-explore-zoom-out" aria-label="Zoom out">
+                            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
+                    <button type="button" class="explore-map__ctrl explore-map__locate js-explore-locate" aria-label="Show my location">
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+
+                <p class="explore-map__credit">
+                    <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a> · Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
                 </p>
             </div>
-            <aside class="map-place-card" id="map-place-card" aria-hidden="true">
-                <div class="map-place-card__inner">
-                    <!-- Compact strip — phones / small screens -->
-                    <div class="map-place-card__mobile">
-                        <figure class="map-place-card__thumb">
-                            <img
-                                class="map-place-card__img"
-                                src="images/trails/pond-meadow-02.jpeg"
-                                width="128"
-                                height="128"
-                                alt="Wooded stretch at Pond Meadow Park"
-                                decoding="async"
-                            >
-                        </figure>
-                        <div class="map-place-card__content">
-                            <button type="button" class="map-place-card__close js-map-place-close" aria-label="Close trail details">
-                                <svg class="map-ui-icon map-ui-icon--md" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <div class="map-place-card__head">
-                                <div class="map-place-card__copy">
-                                    <div id="map-place-heading-anchor-mobile" class="map-place-card__heading-anchor"></div>
-                                    <div class="map-place-card__strip-meta">
-                                        <span class="map-place-card__difficulty-badge" data-map-strip-difficulty-wrap hidden>
-                                            <span class="map-place-card__difficulty-dot" aria-hidden="true"></span>
-                                            <span class="map-place-card__difficulty-label"></span>
-                                        </span>
-                                        <span class="map-place-card__meta-sep" data-map-strip-difficulty-sep hidden aria-hidden="true">·</span>
-                                        <p class="text-body-sm map-place-card__detail map-place-card__detail--mobile">1.9 mi · Est. 40 min · Loop</p>
-                                    </div>
-                                </div>
-                                <div class="map-place-card__head-actions">
-                                    <a
-                                        class="map-place-card__directions btn btn--primary btn--small js-map-directions"
-                                        href="#"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        >Directions</a>
-                                    <button type="button" class="map-place-card__info-btn btn btn--stroke btn--small js-map-place-more-info" aria-label="Open trail info">
-                                        Info
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+
+            <!-- Search + tag filters (top of sidebar on desktop, floating over the map on phones) -->
+            <div class="explore-filters">
+                <h1 class="explore-filters__title">Our go-to trails</h1>
+                <p class="explore-filters__intro">The trails our group walks again and again. Pick one to see photos, what it’s good for, and directions.</p>
+                <label class="explore-search">
+                    <span class="u-screen-reader-text">Search trails</span>
+                    <svg class="explore-search__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <input type="search" class="explore-search__input js-explore-search" placeholder="Search parks, trails or towns" autocomplete="off">
+                </label>
+                <div class="explore-chips js-explore-chips" role="group" aria-label="Filter by feature"></div>
+            </div>
+
+            <!-- Sidebar (desktop) / bottom sheet (phones) -->
+            <section class="explore-sheet" id="explore-sheet" aria-label="Trails">
+                <div class="explore-sheet__grip js-explore-grip" aria-hidden="true"><span></span></div>
+
+                <!-- List view -->
+                <div class="explore-list">
+                    <div class="explore-list__head js-explore-grip-zone">
+                        <h2 class="explore-list__count js-explore-count">Blazed Trails</h2>
+                        <span class="explore-list__drag-hint js-explore-drag-hint">Drag up for list</span>
                     </div>
-
-                    <!-- Side panel — tablet & desktop -->
-                    <div class="map-place-card__tablet">
-                        <header class="map-place-card__toolbar">
-                            <a class="map-place-card__toolbar-link" href="index.html" aria-label="Back to home">
-                                <svg class="map-ui-icon map-ui-icon--sm" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span>Back</span>
-                            </a>
-                            <span class="map-place-card__toolbar-fill" aria-hidden="true"></span>
-                            <button type="button" class="map-place-card__close map-place-card__close--toolbar js-map-place-close" aria-label="Close trail details">
-                                <svg class="map-ui-icon map-ui-icon--md" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </header>
-                        <div class="map-place-card__tablet-scroll">
-                            <div id="map-place-heading-anchor-tablet" class="map-place-card__heading-anchor">
-                                <div id="map-place-trail-heading" class="map-place-card__trail-heading">
-                                    <h2 class="map-place-card__title">Pond Meadow Park</h2>
-                                </div>
-                            </div>
-
-                            <div class="map-place-card__actions" role="toolbar" aria-label="Trail actions">
-                                <a class="btn btn--primary btn--small js-map-directions" href="#" target="_blank" rel="noopener noreferrer">Directions</a>
-                                <button type="button" class="btn btn--stroke btn--small js-map-place-share" aria-label="Share trail">Share</button>
-                            </div>
-
-                            <div class="map-place-card__gallery">
-                                <img class="map-place-card__gallery-main" src="" alt="" width="320" height="200" decoding="async">
-                                <div class="map-place-card__gallery-stack">
-                                    <img class="map-place-card__gallery-sub" src="" alt="" width="160" height="96" decoding="async">
-                                    <img class="map-place-card__gallery-sub" src="" alt="" width="160" height="96" decoding="async">
-                                </div>
-                            </div>
-
-                            <dl class="map-place-card__metrics">
-                                <div class="map-place-card__metric">
-                                    <dt class="map-place-card__metric-label">Length</dt>
-                                    <dd class="map-place-card__metric-value" data-map-metric="length">—</dd>
-                                </div>
-                                <div class="map-place-card__metric">
-                                    <dt class="map-place-card__metric-label">Est. time</dt>
-                                    <dd class="map-place-card__metric-value" data-map-metric="estimatedTime">—</dd>
-                                </div>
-                                <div class="map-place-card__metric">
-                                    <dt class="map-place-card__metric-label">Route type</dt>
-                                    <dd class="map-place-card__metric-value" data-map-metric="routeType">—</dd>
-                                </div>
-                            </dl>
-
-                            <p class="map-place-card__description"></p>
-                            <ul class="map-place-card__tags" aria-label="Trail features" hidden></ul>
-                        </div>
-                    </div>
+                    <ul class="explore-list__items js-explore-list"></ul>
+                    <p class="explore-list__empty js-explore-empty" hidden>No trails match. Try another search or filter.</p>
                 </div>
-            </aside>
 
-            <!-- Phone: full-page trail detail (AllTrails-style); sibling of card for correct fixed positioning -->
-            <div
-                class="map-place-card__mobile-modal map-place-detail"
-                id="map-place-mobile-modal"
-                aria-hidden="true"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Trail details"
-            >
-                <div class="map-place-detail__scroll">
-                    <section class="map-place-detail__hero" aria-label="Trail photos">
-                        <button type="button" class="map-place-detail__hero-back js-map-place-modal-back" aria-label="Back to map">
-                            <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                <!-- Detail view -->
+                <article class="explore-detail" aria-labelledby="explore-detail-title">
+                    <div class="explore-detail__toolbar">
+                        <button type="button" class="explore-detail__back js-explore-back">
+                            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            All trails
                         </button>
-                        <div class="map-place-detail__hero-actions">
-                            <button type="button" class="map-place-detail__hero-icon-btn js-map-place-share" aria-label="Share trail">
-                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="3" y="11" width="18" height="10" rx="1.5" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <path d="M12 5v7M8.5 8.5L12 5l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                        <div class="explore-detail__toolbar-actions">
+                            <button type="button" class="explore-icon-btn js-explore-save" aria-label="Save trail" aria-pressed="false">
+                                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none"><path d="M6 4h12v16l-6-4.5L6 20V4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
                             </button>
-                            <button type="button" class="map-place-detail__hero-icon-btn map-place-detail__hero-icon-btn--close js-map-place-modal-dismiss" aria-label="Close details">
-                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                            <button type="button" class="explore-icon-btn js-explore-share" aria-label="Share trail">
+                                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none"><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                             </button>
                         </div>
-                        <div class="map-place-detail__hero-gallery">
-                            <button
-                                type="button"
-                                class="map-place-detail__hero-gallery-nav map-place-detail__hero-gallery-prev js-map-detail-gallery-prev"
-                                aria-label="Previous photo"
-                            >
-                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <div
-                                class="map-place-detail__hero-img-wrap js-map-detail-gallery-open"
-                                role="button"
-                                tabindex="0"
-                                aria-label="View photo full size"
-                            >
-                                <img class="map-place-detail__hero-img" src="" alt="" width="1200" height="600" decoding="async">
-                            </div>
-                            <button
-                                type="button"
-                                class="map-place-detail__hero-gallery-nav map-place-detail__hero-gallery-next js-map-detail-gallery-next"
-                                aria-label="Next photo"
-                            >
-                                <svg class="map-place-detail__hero-icon-svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="map-place-detail__hero-footer">
-                            <div class="map-place-detail__photo-dots"></div>
-                            <div class="map-place-detail__mini-map-wrap" hidden title="Back to map">
-                                <div
-                                    id="map-place-detail-mini-map"
-                                    class="map-place-detail__mini-map"
-                                    role="img"
-                                    aria-label="Trail route on map"
-                                ></div>
-                            </div>
-                        </div>
-                    </section>
+                    </div>
 
-                    <div class="map-place-detail__sheet">
-                        <p class="map-place-detail__breadcrumbs text-body-sm"></p>
-
-                        <div id="map-place-heading-anchor-mobile-modal" class="map-place-card__heading-anchor"></div>
-
-                        <div class="map-place-detail__meta-row">
-                            <span class="map-place-detail__difficulty-wrap" hidden>
-                                <span class="map-place-detail__difficulty-dot" aria-hidden="true"></span>
-                                <span class="map-place-detail__difficulty-label"></span>
+                    <div class="explore-detail__body">
+                        <button type="button" class="explore-detail__photo js-explore-photos" aria-label="View photos">
+                            <img class="explore-detail__img" src="" alt="" width="720" height="460" decoding="async">
+                            <span class="explore-detail__photo-count">
+                                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M9 6l1.5-2h3L15 6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                                <span class="js-explore-photo-count"></span>
                             </span>
-                            <a class="map-place-detail__park-link map-place-detail__park-link--standalone" href="#" hidden></a>
+                        </button>
+
+                        <div class="explore-detail__heading">
+                            <p class="explore-detail__crumbs js-explore-crumbs"></p>
+                            <h2 class="explore-detail__title" id="explore-detail-title"></h2>
+                            <p class="explore-detail__town js-explore-town"></p>
+                            <button type="button" class="explore-detail__close js-explore-back" aria-label="Back to all trails">
+                                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            </button>
                         </div>
 
-                        <div class="map-place-detail__stats-grid">
-                            <div class="map-place-detail__stat">
-                                <span class="map-place-detail__stat-label">Length</span>
-                                <span class="map-place-detail__stat-value" data-map-metric="length">—</span>
-                            </div>
-                            <div class="map-place-detail__stat">
-                                <span class="map-place-detail__stat-label">Est. time</span>
-                                <span class="map-place-detail__stat-value" data-map-metric="estimatedTime">—</span>
-                            </div>
-                            <div class="map-place-detail__stat map-place-detail__stat--route">
-                                <span class="map-place-detail__stat-label">Route type</span>
-                                <span class="map-place-detail__stat-value map-place-detail__stat-value--route" data-map-metric="routeType">—</span>
-                            </div>
+                        <div class="explore-detail__actions">
+                            <a class="explore-btn explore-btn--primary js-explore-directions" href="#" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none"><path d="M21 3L3 10.5l7.5 3L13.5 21 21 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                                Directions
+                            </a>
+                            <button type="button" class="explore-icon-btn explore-icon-btn--lg explore-detail__inline-action js-explore-save" aria-label="Save trail" aria-pressed="false">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><path d="M6 4h12v16l-6-4.5L6 20V4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                            </button>
+                            <button type="button" class="explore-icon-btn explore-icon-btn--lg explore-detail__inline-action js-explore-share" aria-label="Share trail">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none"><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            </button>
                         </div>
 
-                        <p class="map-place-detail__description map-place-card__description"></p>
-                        <ul class="map-place-card__tags" aria-label="Trail features" hidden></ul>
+                        <dl class="explore-detail__stats js-explore-stats">
+                            <div><dt>Length</dt><dd data-metric="length">—</dd></div>
+                            <div><dt>Est. time</dt><dd data-metric="estimatedTime">—</dd></div>
+                            <div><dt>Route</dt><dd data-metric="routeType">—</dd></div>
+                        </dl>
 
-                        <a
-                            class="map-place-detail__cta-directions js-map-directions"
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >Get directions</a>
+                        <section class="explore-detail__section">
+                            <h3>About</h3>
+                            <p class="js-explore-description"></p>
+                        </section>
 
-                        <section class="map-place-weather" hidden aria-labelledby="map-place-weather-heading" data-map-weather>
-                            <div class="map-place-weather__card">
-                                <h2 id="map-place-weather-heading" class="map-place-weather__title">Weather</h2>
-                                <p class="map-place-weather__loading" aria-live="polite">Loading weather…</p>
-                                <div class="map-place-weather__inner" hidden>
-                                    <div class="map-place-weather__tabs" role="tablist" aria-label="Daily forecast"></div>
-                                    <div class="map-place-weather__detail" id="map-place-weather-panel" role="tabpanel" aria-labelledby="map-weather-tab-0">
-                                        <div class="map-place-weather__condition">
-                                            <span class="map-place-weather__condition-icon" aria-hidden="true"></span>
-                                            <span class="map-place-weather__condition-label"></span>
-                                        </div>
-                                        <div class="map-place-weather__temps">
-                                            <span class="map-place-weather__high"></span>
-                                            <span class="map-place-weather__low"></span>
-                                        </div>
-                                        <div class="map-place-weather__meta">
-                                            <div class="map-place-weather__meta-item">
-                                                <span class="map-place-weather__meta-icon map-place-weather__meta-icon--rain" aria-hidden="true"></span>
-                                                <span class="map-place-weather__precip"></span>
-                                            </div>
-                                            <div class="map-place-weather__meta-item">
-                                                <span class="map-place-weather__meta-icon map-place-weather__meta-icon--sunrise" aria-hidden="true"></span>
-                                                <time class="map-place-weather__sunrise"></time>
-                                            </div>
-                                            <div class="map-place-weather__meta-item">
-                                                <span class="map-place-weather__meta-icon map-place-weather__meta-icon--sunset" aria-hidden="true"></span>
-                                                <time class="map-place-weather__sunset"></time>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="map-place-weather__error" hidden role="alert"></p>
-                                <p class="map-place-weather__credit text-body-sm">
-                                    <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open‑Meteo</a>
-                                </p>
-                            </div>
+                        <section class="explore-detail__section js-explore-tags-section">
+                            <h3>Good for</h3>
+                            <ul class="explore-tags js-explore-tags"></ul>
                         </section>
                     </div>
-                </div>
-            </div>
-        </div>
-
+                </article>
+            </section>
+        </main>
     </div> <!-- end page-wrap -->
 
 
@@ -372,7 +239,7 @@
     <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/maps.js"></script>
+    <script src="js/maps.js?v=2026-10-21-maps"></script>
 
 </body>
 </html>

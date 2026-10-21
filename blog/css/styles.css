@@ -5405,3 +5405,13 @@ body.search-is-visible .s-header__search-inner {
         padding-top : var(--vspace-1);
     }
 }
+
+/* ===================================================================
+ * # IMAGE PROTECTION
+ * stop dragging photos out and the iOS long-press save menu
+ * ------------------------------------------------------------------- */
+img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
