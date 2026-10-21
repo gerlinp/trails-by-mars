@@ -4472,6 +4472,18 @@ td:last-child {
     align-items: center;
 }
 
+.events-upcoming {
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    max-width: 1200px;
+    font-family: "Fraunces", var(--font-2);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 3.2rem;
+    text-align: center;
+    color: #4f5e42;
+}
+
 .events-grid {
     display: flex;
     flex-direction: column;
@@ -4590,6 +4602,9 @@ td:last-child {
 }
 
 .event-card--season {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
     font-family: "Jost", var(--font-1);
 }
 
@@ -4599,6 +4614,9 @@ td:last-child {
 }
 
 .event-card--season .event-card__intro p {
+    max-width: 66ch;
+    margin-left: auto;
+    margin-right: auto;
     font-size: 1.8rem;
     color: #4a4a4a;
 }
@@ -4734,9 +4752,9 @@ td:last-child {
 }
 
 .events-connect {
-    width: 100%;
-    max-width: 1200px;
-    margin: 2rem 1.5rem 4rem;
+    width: calc(100% - 3rem);
+    max-width: 720px;
+    margin: 2rem auto 4rem;
     padding: 1.75rem 2rem;
     box-sizing: border-box;
 }
